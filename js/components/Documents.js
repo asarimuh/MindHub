@@ -2,8 +2,6 @@ class Documents {
   constructor() {
     this.name = 'documents';
     this.allFiles = [];
-    this.API_KEY = "AIzaSyAImgEo_KH2xyLTs61pTkT_uEqBB4ls6Sg";
-    this.FOLDER_ID = "1T8wpylDLWJZRnif8SkfkR7987sKZKDZc";
   }
 
   render() {
@@ -63,10 +61,9 @@ class Documents {
   }
 
   async loadDocs() {
-    const url = `https://www.googleapis.com/drive/v3/files?q='${this.FOLDER_ID}' in parents and trashed=false&fields=files(id,name,mimeType,webViewLink,iconLink,modifiedTime)&key=${this.API_KEY}`;
 
     try {
-      const res = await fetch(url);
+      const res = await fetch("http://localhost:3000/api/docs");
       const data = await res.json();
 
       this.allFiles = data.files || [];
