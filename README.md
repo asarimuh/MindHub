@@ -19,6 +19,7 @@ Website personal all in one.
 ## Usage
 Cara make project-nya:
 ```bash
-npm start
+npm star
+```
 
 ![Screenshot of v1](https://github.com/asarimuh/MindHub/blob/e81326dcf86e5d7c969605546c062af4b4bd4f18/v1%20Screenshot.png)
