@@ -20,3 +20,5 @@ Website personal all in one.
 Cara make project-nya:
 ```bash
 npm start
+
+![Screenshot of v1](https://github.com/asarimuh/MindHub/blob/e81326dcf86e5d7c969605546c062af4b4bd4f18/v1%20Screenshot.png)
