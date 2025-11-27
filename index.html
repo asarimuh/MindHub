@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DriveHub - Personal Workspace</title>
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Chart.js for stock charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Custom CSS for shadcn-like styling -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 222.2 84% 4.9%;
+      --card: 0 0% 100%;
+      --card-foreground: 222.2 84% 4.9%;
+      --popover: 0 0% 100%;
+      --popover-foreground: 222.2 84% 4.9%;
+      --primary: 221.2 83.2% 53.3%;
+      --primary-foreground: 210 40% 98%;
+      --secondary: 210 40% 96%;
+      --secondary-foreground: 222.2 84% 4.9%;
+      --muted: 210 40% 96%;
+      --muted-foreground: 215.4 16.3% 46.9%;
+      --accent: 210 40% 96%;
+      --accent-foreground: 222.2 84% 4.9%;
+      --destructive: 0 84.2% 60.2%;
+      --destructive-foreground: 210 40% 98%;
+      --border: 214.3 31.8% 91.4%;
+      --input: 214.3 31.8% 91.4%;
+      --ring: 221.2 83.2% 53.3%;
+      --radius: 0.5rem;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+    }
+    
+    .card {
+      background-color: hsl(var(--card));
+      border: 1px solid hsl(var(--border));
+      border-radius: calc(var(--radius) + 0.25rem);
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      transition: all 0.2s ease-in-out;
+    }
+    
+    .card:hover {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    .input {
+      background-color: hsl(var(--background));
+      border: 1px solid hsl(var(--input));
+      border-radius: calc(var(--radius) - 0.125rem);
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+    
+    .input:focus {
+      outline: none;
+      border-color: hsl(var(--ring));
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: calc(var(--radius) - 0.25rem);
+      border: 1px solid hsl(var(--border));
+      background-color: hsl(var(--secondary));
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: hsl(var(--secondary-foreground));
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: calc(var(--radius) - 0.125rem);
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
+    
+    .btn-primary {
+      background-color: hsl(var(--primary));
+      color: hsl(var(--primary-foreground));
+      border: 1px solid hsl(var(--primary));
+    }
+    
+    .btn-primary:hover {
+      background-color: hsl(221.2 83.2% 43.3%);
+    }
+    
+    .btn-secondary {
+      background-color: hsl(var(--secondary));
+      color: hsl(var(--secondary-foreground));
+      border: 1px solid hsl(var(--border));
+    }
+    
+    .btn-secondary:hover {
+      background-color: hsl(210 40% 92%);
+    }
+    
+    .tab-active {
+      background-color: hsl(var(--primary));
+      color: hsl(var(--primary-foreground));
+    }
+    
+    .stock-up {
+      color: #10b981;
+    }
+    
+    .stock-down {
+      color: #ef4444;
+    }
+    
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 0.5rem;
+    }
+    
+    .image-item {
+      aspect-ratio: 1;
+      border-radius: calc(var(--radius) - 0.125rem);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .image-item:hover {
+      transform: scale(1.05);
+    }
+    
+    .image-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .note-item {
+      border-left: 3px solid hsl(var(--primary));
+      padding-left: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .news-item {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid hsl(var(--border));
+    }
+    
+    .news-item:last-child {
+      border-bottom: none;
+    }
+    
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      border-radius: calc(var(--radius) - 0.125rem);
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .sidebar-item:hover {
+      background-color: hsl(var(--accent));
+    }
+    
+    .sidebar-item.active {
+      background-color: hsl(var(--primary) / 0.1);
+      color: hsl(var(--primary));
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: hsl(var(--secondary));
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: hsl(var(--border));
+      border-radius: 3px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: hsl(var(--muted-foreground));
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- Header -->
+  <header class="border-b bg-white sticky top-0 z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center space-x-2">
+          <svg class="w-8 h-8 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11.344 17.031c-.616 0-1.109-.492-1.109-1.109V8.109c0-.616.493-1.109 1.109-1.109h1.312c.616 0 1.109.493 1.109 1.109v7.813c0 .617-.493 1.109-1.109 1.109h-1.312zm7.344-7.344c-.617 0-1.109-.492-1.109-1.109V1.109C17.578.493 18.071 0 18.688 0h1.312c.616 0 1.109.493 1.109 1.109v7.469c0 .617-.493 1.109-1.109 1.109h-1.312zm-14.688 0C3.493 9.687 3 9.195 3 8.578V1.109C3 .493 3.493 0 4.109 0h1.313c.616 0 1.109.493 1.109 1.109v7.469c0 .617-.493 1.109-1.109 1.109H4z"/>
+            <path d="M22.781 24H1.219A1.22 1.22 0 0 1 0 22.781V12c0-.673.546-1.219 1.219-1.219h21.562C23.454 10.781 24 11.327 24 12v10.781c0 .673-.546 1.219-1.219 1.219zM2.438 22.125h19.124V13.5H2.438v8.625z"/>
+          </svg>
+          <span class="text-xl font-semibold">DriveHub</span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="relative">
+            <input 
+              type="text" 
+              placeholder="Search..." 
+              class="input w-64 pl-9"
+            >
+            <svg class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+          <button class="btn btn-secondary">Settings</button>
+          <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">JD</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="max-w-7xl mx-auto p-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Sidebar Navigation -->
+      <div class="lg:col-span-2">
+        <div class="card p-4 sticky top-24">
+          <nav class="space-y-1">
+            <div class="sidebar-item active">
+              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+              </svg>
+              <span>Dashboard</span>
+            </div>
+            <div class="sidebar-item">
+              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              <span>Documents</span>
+            </div>
+            <div class="sidebar-item">
+              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <span>Gallery</span>
+            </div>
+            <div class="sidebar-item">
+              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              <span>Stocks</span>
+            </div>
+            <div class="sidebar-item">
+              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9m0 0v12m0-12a2 2 0 012-2h2a2 2 0 012 2M9 9v12"></path>
+              </svg>
+              <span>News</span>
+            </div>
+            <div class="sidebar-item">
+              <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+              <span>Notes</span>
+            </div>
+          </nav>
+        </div>
+      </div>
+      
+      <!-- Main Content Area -->
+      <div class="lg:col-span-10">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          
+          <!-- Left Column -->
+          <div class="xl:col-span-2 space-y-6">
+            
+            <!-- Documents Section -->
+            <div class="card p-6">
+              <div class="flex justify-between items-center mb-6">
+                <div>
+                  <h2 class="text-xl font-semibold">Documents</h2>
+                  <p class="text-muted-foreground mt-1">Your recent Google Drive files</p>
+                </div>
+                <div class="flex space-x-2">
+                  <button class="btn btn-secondary flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                    </svg>
+                    <span>Filter</span>
+                  </button>
+                  <button class="btn btn-secondary flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4"></path>
+                    </svg>
+                    <span>Sort</span>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Search -->
+              <div class="mb-6">
+                <input 
+                  id="search"
+                  type="text" 
+                  placeholder="Search documents..."
+                  class="input w-full"
+                />
+              </div>
+
+              <!-- Grid Container -->
+              <div id="docs_grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Cards will appear here -->
+                <div class="flex items-center justify-center p-8">
+                  <div class="animate-pulse flex space-x-4">
+                    <div class="rounded-full bg-gray-200 h-10 w-10"></div>
+                    <div class="flex-1 space-y-2 py-1">
+                      <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                      <div class="space-y-2">
+                        <div class="h-3 bg-gray-200 rounded"></div>
+                        <div class="h-3 bg-gray-200 rounded w-5/6"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Image Gallery Section -->
+            <div class="card p-6">
+              <div class="flex justify-between items-center mb-6">
+                <div>
+                  <h2 class="text-xl font-semibold">Memory Board</h2>
+                  <p class="text-muted-foreground mt-1">Your important moments</p>
+                </div>
+                <button class="btn btn-primary flex items-center space-x-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                  </svg>
+                  <span>Add Photos</span>
+                </button>
+              </div>
+              
+              <div class="image-grid">
+                <div class="image-item">
+                  <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Friends gathering">
+                </div>
+                <div class="image-item">
+                  <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Team meeting">
+                </div>
+                <div class="image-item">
+                  <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Workspace">
+                </div>
+                <div class="image-item">
+                  <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Conference">
+                </div>
+                <div class="image-item">
+                  <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Study group">
+                </div>
+                <div class="image-item">
+                  <img src="https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Team building">
+                </div>
+                <div class="image-item">
+                  <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Project completion">
+                </div>
+                <div class="image-item">
+                  <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Celebration">
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Right Column -->
+          <div class="space-y-6">
+            
+            <!-- Quick Notes Section -->
+            <div class="card p-6">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Quick Notes</h2>
+                <button class="text-sm text-blue-600 hover:text-blue-800">View All</button>
+              </div>
+              <p class="text-sm text-muted-foreground mb-4">Jot down quick thoughts and ideas</p>
+              
+              <div class="mb-4">
+                <textarea 
+                  id="note-input"
+                  placeholder="What's on your mind?"
+                  class="input w-full h-24 resize-none"
+                ></textarea>
+                <div class="flex justify-end mt-2">
+                  <button id="add-note" class="btn btn-primary text-sm">Add Note</button>
+                </div>
+              </div>
+              
+              <div id="notes-container" class="space-y-3 max-h-60 overflow-y-auto">
+                <div class="note-item">
+                  <p class="text-sm">Remember to finish the quarterly report by Friday</p>
+                  <p class="text-xs text-muted-foreground mt-1">Today, 10:30 AM</p>
+                </div>
+                <div class="note-item">
+                  <p class="text-sm">Call client about project requirements</p>
+                  <p class="text-xs text-muted-foreground mt-1">Yesterday, 3:45 PM</p>
+                </div>
+                <div class="note-item">
+                  <p class="text-sm">Research new design trends for presentation</p>
+                  <p class="text-xs text-muted-foreground mt-1">Nov 12, 9:15 AM</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Stock Dashboard -->
+            <div class="card p-6">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Stock Watchlist</h2>
+                <button class="text-sm text-blue-600 hover:text-blue-800">Manage</button>
+              </div>
+              
+              <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                  <div>
+                    <div class="font-medium">BBCA</div>
+                    <div class="text-sm text-muted-foreground">Bank Central Asia</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-medium">9,450</div>
+                    <div class="text-sm stock-up">+1.25%</div>
+                  </div>
+                  <div class="w-16 h-8">
+                    <canvas id="bbca-chart"></canvas>
+                  </div>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                  <div>
+                    <div class="font-medium">BBRI</div>
+                    <div class="text-sm text-muted-foreground">Bank Rakyat Indonesia</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-medium">4,820</div>
+                    <div class="text-sm stock-up">+0.84%</div>
+                  </div>
+                  <div class="w-16 h-8">
+                    <canvas id="bbri-chart"></canvas>
+                  </div>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                  <div>
+                    <div class="font-medium">ICBP</div>
+                    <div class="text-sm text-muted-foreground">Indofood CBP</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-medium">10,200</div>
+                    <div class="text-sm stock-down">-0.68%</div>
+                  </div>
+                  <div class="w-16 h-8">
+                    <canvas id="icbp-chart"></canvas>
+                  </div>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                  <div>
+                    <div class="font-medium">TLKM</div>
+                    <div class="text-sm text-muted-foreground">Telkom Indonesia</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-medium">3,640</div>
+                    <div class="text-sm stock-up">+0.55%</div>
+                  </div>
+                  <div class="w-16 h-8">
+                    <canvas id="tlkm-chart"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- News Aggregator -->
+            <div class="card p-6">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Latest News</h2>
+                <div class="flex space-x-1">
+                  <button class="text-xs px-2 py-1 rounded bg-blue-100 text-blue-800">Tech</button>
+                  <button class="text-xs px-2 py-1 rounded hover:bg-gray-100">Finance</button>
+                  <button class="text-xs px-2 py-1 rounded hover:bg-gray-100">Indonesia</button>
+                </div>
+              </div>
+              
+              <div id="news-container" class="space-y-4 max-h-60 overflow-y-auto">
+                <div class="news-item">
+                  <h3 class="font-medium text-sm">New AI Model Breaks Performance Records</h3>
+                  <p class="text-xs text-muted-foreground mt-1">TechCrunch • 2 hours ago</p>
+                </div>
+                <div class="news-item">
+                  <h3 class="font-medium text-sm">Central Bank Holds Interest Rates Steady</h3>
+                  <p class="text-xs text-muted-foreground mt-1">Bloomberg • 4 hours ago</p>
+                </div>
+                <div class="news-item">
+                  <h3 class="font-medium text-sm">Indonesia's Economy Shows Strong Q3 Growth</h3>
+                  <p class="text-xs text-muted-foreground mt-1">Kompas • 6 hours ago</p>
+                </div>
+                <div class="news-item">
+                  <h3 class="font-medium text-sm">Tech Giant Announces New Southeast Asia HQ in Jakarta</h3>
+                  <p class="text-xs text-muted-foreground mt-1">Reuters • 8 hours ago</p>
+                </div>
+                <div class="news-item">
+                  <h3 class="font-medium text-sm">Startup Funding Reaches Record High in 2023</h3>
+                  <p class="text-xs text-muted-foreground mt-1">Tech in Asia • 10 hours ago</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const API_KEY = "AIzaSyAImgEo_KH2xyLTs61pTkT_uEqBB4ls6Sg";
+const FOLDER_ID = "1T8wpylDLWJZRnif8SkfkR7987sKZKDZc";
+
+let allFiles = [];
+
+// Initialize stock charts
+function initializeStockCharts() {
+  const stockData = {
+    bbca: [9400, 9420, 9430, 9440, 9450],
+    bbri: [4780, 4790, 4800, 4810, 4820],
+    icbp: [10250, 10230, 10210, 10200, 10200],
+    tlkm: [3620, 3630, 3635, 3640, 3640]
+  };
+  
+  Object.keys(stockData).forEach(stock => {
+    const ctx = document.getElementById(`${stock}-chart`).getContext('2d');
+    const isPositive = stockData[stock][4] >= stockData[stock][0];
+    
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['', '', '', '', ''],
+        datasets: [{
+          data: stockData[stock],
+          borderColor: isPositive ? '#10b981' : '#ef4444',
+          backgroundColor: isPositive ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { display: false },
+          y: { display: false }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false }
+        }
+      }
+    });
+  });
+}
+
+// Quick Notes functionality
+function initializeNotes() {
+  const addNoteButton = document.getElementById('add-note');
+  const noteInput = document.getElementById('note-input');
+  const notesContainer = document.getElementById('notes-container');
+  
+  addNoteButton.addEventListener('click', function() {
+    const noteText = noteInput.value.trim();
+    if (noteText) {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const dateString = now.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      
+      const noteElement = document.createElement('div');
+      noteElement.className = 'note-item';
+      noteElement.innerHTML = `
+        <p class="text-sm">${noteText}</p>
+        <p class="text-xs text-muted-foreground mt-1">${dateString}, ${timeString}</p>
+      `;
+      
+      notesContainer.prepend(noteElement);
+      noteInput.value = '';
+      
+      // Limit to 10 notes
+      if (notesContainer.children.length > 10) {
+        notesContainer.removeChild(notesContainer.lastChild);
+      }
+    }
+  });
+  
+  // Allow Enter key to add note (with Shift for new line)
+  noteInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      addNoteButton.click();
+    }
+  });
+}
+
+// News category switching
+function initializeNews() {
+  const newsButtons = document.querySelectorAll('.card.p-6:last-child .text-xs.px-2.py-1.rounded');
+  const newsContainer = document.getElementById('news-container');
+  
+  const newsData = {
+    tech: [
+      { title: "New AI Model Breaks Performance Records", source: "TechCrunch", time: "2 hours ago" },
+      { title: "Tech Giant Announces New Southeast Asia HQ in Jakarta", source: "Reuters", time: "8 hours ago" },
+      { title: "Startup Funding Reaches Record High in 2023", source: "Tech in Asia", time: "10 hours ago" },
+      { title: "Major Software Update Released with Security Fixes", source: "The Verge", time: "12 hours ago" },
+      { title: "Tech Conference Draws Record Attendance", source: "TechRadar", time: "1 day ago" }
+    ],
+    finance: [
+      { title: "Central Bank Holds Interest Rates Steady", source: "Bloomberg", time: "4 hours ago" },
+      { title: "Stock Markets Reach New Highs Amid Positive Data", source: "Financial Times", time: "5 hours ago" },
+      { title: "Cryptocurrency Regulations Tighten Globally", source: "CoinDesk", time: "7 hours ago" },
+      { title: "Investment Firm Announces Major Acquisition", source: "Wall Street Journal", time: "9 hours ago" },
+      { title: "Economic Indicators Show Strong Growth", source: "Reuters", time: "11 hours ago" }
+    ],
+    indonesia: [
+      { title: "Indonesia's Economy Shows Strong Q3 Growth", source: "Kompas", time: "6 hours ago" },
+      { title: "Government Announces New Infrastructure Projects", source: "Tempo", time: "8 hours ago" },
+      { title: "Tourism Sector Rebounds with Record Visitors", source: "Koran Sindo", time: "10 hours ago" },
+      { title: "Local Startup Reaches Unicorn Status", source: "Kontan", time: "1 day ago" },
+      { title: "New Policy Aims to Boost Digital Economy", source: "Bisnis Indonesia", time: "1 day ago" }
+    ]
+  };
+  
+  newsButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      // Update active button
+      newsButtons.forEach(btn => {
+        btn.classList.remove('bg-blue-100', 'text-blue-800');
+        btn.classList.add('hover:bg-gray-100');
+      });
+      this.classList.add('bg-blue-100', 'text-blue-800');
+      this.classList.remove('hover:bg-gray-100');
+      
+      // Update news content
+      const category = this.textContent.toLowerCase();
+      const news = newsData[category] || newsData.tech;
+      
+      newsContainer.innerHTML = '';
+      news.forEach(item => {
+        const newsElement = document.createElement('div');
+        newsElement.className = 'news-item';
+        newsElement.innerHTML = `
+          <h3 class="font-medium text-sm">${item.title}</h3>
+          <p class="text-xs text-muted-foreground mt-1">${item.source} • ${item.time}</p>
+        `;
+        newsContainer.appendChild(newsElement);
+      });
+    });
+  });
+}
+
+// Original document loading functionality
+async function loadDocs() {
+  const url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}' in parents and trashed=false&fields=files(id,name,mimeType,webViewLink,iconLink,modifiedTime)&key=${API_KEY}`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    allFiles = data.files || [];
+    render(allFiles);
+  } catch (error) {
+    console.error("Error loading documents:", error);
+    document.getElementById("docs_grid").innerHTML = `
+      <div class="col-span-full flex flex-col items-center justify-center p-8 text-center">
+        <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+        <h3 class="text-lg font-medium mb-1">Failed to load documents</h3>
+        <p class="text-muted-foreground">Please check your connection and try again.</p>
+      </div>
+    `;
+  }
+}
+
+// Render Cards
+function render(files) {
+  const grid = document.getElementById("docs_grid");
+  
+  if (files.length === 0) {
+    grid.innerHTML = `
+      <div class="col-span-full flex flex-col items-center justify-center p-8 text-center">
+        <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <h3 class="text-lg font-medium mb-1">No documents found</h3>
+        <p class="text-muted-foreground">Try adjusting your search or filter to find what you're looking for.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  grid.innerHTML = "";
+
+  files.forEach(file => {
+    const card = document.createElement("div");
+    card.className = "card p-4 cursor-pointer";
+    card.onclick = () => window.open(file.webViewLink, "_blank");
+
+    // Format file type for display
+    const fileType = file.mimeType.replace("application/vnd.google-apps.", "");
+    const formattedFileType = fileType.charAt(0).toUpperCase() + fileType.slice(1);
+    
+    // Format date for display
+    const modifiedDate = new Date(file.modifiedTime);
+    const formattedDate = modifiedDate.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
+    });
+
+    card.innerHTML = `
+      <div class="flex items-start gap-3 mb-3">
+        <img src="${file.iconLink}" class="w-8 h-8 mt-1" alt="icon">
+        <div class="flex-1 min-w-0">
+          <h2 class="font-medium text-base truncate">${file.name}</h2>
+          <p class="text-xs text-muted-foreground mt-1">${formattedFileType}</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2 mb-3">
+        <span class="badge">
+          ${formattedFileType}
+        </span>
+      </div>
+
+      <div class="flex items-center text-xs text-muted-foreground">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        Modified: ${formattedDate}
+      </div>
+    `;
+    
+    grid.appendChild(card);
+  });
+}
+
+// Search Filter
+document.getElementById("search").addEventListener("input", (e) => {
+  const q = e.target.value.toLowerCase();
+  const filtered = allFiles.filter(f => f.name.toLowerCase().includes(q));
+  render(filtered);
+});
+
+// Initialize all components when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  loadDocs();
+  initializeStockCharts();
+  initializeNotes();
+  initializeNews();
+});
+</script>
+
+</body>
+</html>
