@@ -29,3 +29,42 @@ app.get("/api/docs", async (req, res) => {
 app.listen(process.env.PORT, () => {
   console.log("Server running on port " + process.env.PORT);
 });
+
+app.get("/api/github", async (req, res) => {
+  try {
+    const query = `
+      query {
+        user(login: "${process.env.GITHUB_USERNAME}") {
+          contributionsCollection {
+            contributionCalendar {
+              totalContributions
+              weeks {
+                contributionDays {
+                  date
+                  contributionCount
+                  color
+                }
+              }
+            }
+          }
+        }
+      }
+    `;
+
+    const response = await fetch("https://api.github.com/graphql", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.GITHUB_TOKEN}`
+      },
+      body: JSON.stringify({ query })
+    });
+
+    const data = await response.json();
+    res.json(data);
+
+  } catch (err) {
+    console.error("GitHub API error:", err);
+    res.status(500).json({ error: "Failed to load GitHub contributions." });
+  }
+});
