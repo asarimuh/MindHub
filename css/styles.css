@@ -291,3 +291,18 @@
     .page-content.hidden {
       display: none;
     }
+
+    /* .commit-box {
+  transform: translateY(10px);
+  opacity: 0;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.commit-box.animate {
+  transform: translateY(0);
+  opacity: 1;
+} */
+
+.commit-box {
+  z-index: 1;
+}

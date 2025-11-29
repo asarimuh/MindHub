@@ -11,9 +11,16 @@ class Dashboard {
     // Photo widget
     this.photoIndex = 0;
     this.photoList = Storage.get("dashboard_photos") || [
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=300&h=300&fit=crop"
+      "./assets/img/img1.jpg",
+      "./assets/img/img2.jpg",
+      "./assets/img/img3.jpg",
+      "./assets/img/img4.jpg",
+      "./assets/img/img5.jpg",
+      "./assets/img/img6.jpg",
+      "./assets/img/img7.jpg",
+      "./assets/img/img8.jpg",
+      "./assets/img/img9.jpg",
+      "./assets/img/img10.jpg",
     ];
   }
 
@@ -79,23 +86,6 @@ class Dashboard {
           <!-- Right Column -->
           <div class="space-y-6">
             
-            <!-- Photo Widget -->
-            <div class="card p-6">
-              <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-semibold">Memory Board</h2>
-                <button id="photo-next" class="text-sm text-blue-600 hover:text-blue-800">Next</button>
-              </div>
-              <div class="text-center">
-                <div id="photo-widget" class="photo-widget w-full aspect-square rounded-xl overflow-hidden shadow-lg mb-3 mx-auto">
-                  <img id="photo-widget-img"
-                       src="${this.photoList[0]}"
-                       class="w-full h-full object-cover transition-all duration-500"
-                       alt="Special memory" />
-                </div>
-                <p class="text-sm text-muted-foreground">Cherished moments</p>
-              </div>
-            </div>
-
             <!-- Current Goals -->
             <div class="card p-6">
               <div class="flex items-center justify-between mb-4">
@@ -126,6 +116,21 @@ class Dashboard {
               ${this.renderRecentReflection()}
             </div>
 
+            <!-- Photo Widget -->
+            <div class="card p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold">Memory Board</h2>
+                <button id="photo-next" class="text-sm text-blue-600 hover:text-blue-800">Next</button>
+              </div>
+              <div class="text-center">
+                <div id="photo-widget" class="photo-widget w-full aspect-square rounded-xl overflow-hidden shadow-lg mb-3 mx-auto">
+                  <img id="photo-widget-img"
+                       src="${this.photoList[0]}"
+                       class="w-full h-full object-cover transition-all duration-500"
+                       alt="Special memory" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -145,7 +150,7 @@ class Dashboard {
         <!-- GitHub Activity Section -->
         <div class="mt-8">
           <div class="card p-6">
-            <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center shadow-sm">
                   <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -155,16 +160,6 @@ class Dashboard {
                 <div>
                   <h2 class="text-xl font-semibold tracking-tight">GitHub Activity</h2>
                   <p class="text-sm text-muted-foreground">Your 30-day contribution history</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-4 text-xs text-muted-foreground">
-                <div class="flex items-center gap-1.5">
-                  <div class="w-2 h-2 bg-[#ebedf0] rounded-[1px] border border-gray-200"></div>
-                  <span>Less</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <div class="w-2 h-2 bg-[#216e39] rounded-[1px] border border-gray-200"></div>
-                  <span>More</span>
                 </div>
               </div>
             </div>
@@ -181,6 +176,8 @@ class Dashboard {
       </div>
     `;
   }
+
+  
 
   async fetchGitHubActivity() {
   try {
@@ -213,16 +210,7 @@ class Dashboard {
 
       container.innerHTML = `
         <div class="w-full space-y-6">
-          <!-- Stats Cards -->
-          <div class="grid grid-cols-3 gap-3">
-            ${this.renderStatCard('Total', total, 'text-blue-600', 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253')}
-
-            ${this.renderStatCard('Daily Avg', Math.round(total / 365), 'text-green-600', 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z')}
-
-            ${this.renderStatCard('Streak', this.getCurrentStreak(days), 'text-orange-600', 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6')}
-          </div>
-
-          <!-- Contribution Graph -->
+        <!-- Contribution Graph -->
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <h3 class="text-sm font-semibold text-gray-900">Year in Code</h3>
@@ -254,11 +242,11 @@ class Dashboard {
                               return `
                                 <div class="relative group">
                                   <div 
-                                    class="w-3 h-3 rounded-[2px] border border-gray-100 ${colorClass}"
+                                    class="commit-box w-3 h-3 rounded-[2px] border border-gray-100 ${colorClass}"
                                     title="${date.toDateString()}: ${day.contributionCount} commits"
                                   ></div>
 
-                                  <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:block z-20">
+                                  <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:block z-50">
                                     <div class="bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap shadow-lg">
                                       <div class="font-semibold">${day.contributionCount} contributions</div>
                                       <div class="text-gray-300 text-[10px] mt-0.5">${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
@@ -291,6 +279,16 @@ class Dashboard {
 
             </div>
           </div>
+
+          <!-- Stats Cards -->
+          <div class="grid grid-cols-3 gap-3">
+            ${this.renderStatCard('Total', total, 'text-blue-600', 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253')}
+
+            ${this.renderStatCard('Daily Avg', Math.round(total / 365), 'text-green-600', 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z')}
+
+            ${this.renderStatCard('Streak', this.getCurrentStreak(days), 'text-orange-600', 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6')}
+          </div>
+
 
           <!-- Activity Breakdown - Update to use full year data -->
           <div class="space-y-3">
@@ -328,6 +326,9 @@ class Dashboard {
           </div>
         </div>
       `;
+
+      this.animateGitHubCommits();
+
     }
   } catch (err) {
       const container = document.getElementById("github-commits");
@@ -355,6 +356,35 @@ class Dashboard {
       }
     }
 }
+animateGitHubCommits() {
+  const container = document.getElementById("github-commits");
+  if (!container) return;
+
+  const commitBoxes = container.querySelectorAll(".grid-rows-7 > .relative"); // target each commit box
+
+  // Initially hide boxes
+  commitBoxes.forEach(box => {
+    box.style.opacity = 0;
+    box.style.transform = 'translateY(10px)';
+    box.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+  });
+
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        commitBoxes.forEach((box, index) => {
+          setTimeout(() => {
+            box.style.opacity = 1;
+            box.style.transform = 'translateY(0)';
+          }, index * 5); // stagger by 20ms per box
+        });
+        obs.disconnect(); // only trigger once
+      }
+    });
+  }, { threshold: 0.1 });
+
+  observer.observe(container);
+}
 
 
   renderStatCard(title, value, color, iconPath) {
@@ -370,20 +400,6 @@ class Dashboard {
       </div>
     `;
   }
-
-  getYearlyContributions(days) {
-  const months = Array(12).fill().map(() => []);
-  
-  days.forEach(day => {
-    const date = new Date(day.date);
-    const month = date.getMonth(); // 0-11
-    months[month].push(day);
-  });
-  
-  return months.map(monthDays => ({
-    days: monthDays
-  }));
-}
 
   // Helper methods for GitHub activity
   getCommitIntensity(count) {
@@ -415,35 +431,6 @@ class Dashboard {
       }
     }
     return streak;
-  }
-
-  getStartDate(days) {
-    if (days.length === 0) return '';
-    const startDate = new Date(days[0].date);
-    return startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  }
-
-  getMonthLabels(days) {
-    if (days.length === 0) return [];
-    const months = [];
-    let currentMonth = '';
-    
-    days.forEach(day => {
-      const date = new Date(day.date);
-      const month = date.toLocaleDateString('en-US', { month: 'short' });
-      if (month !== currentMonth) {
-        months.push(month);
-        currentMonth = month;
-      } else {
-        months.push('');
-      }
-    });
-    
-    // Only return non-empty months for the rows
-    return Array(5).fill('').map((_, i) => {
-      const index = i * 7;
-      return months[index] || '';
-    });
   }
 
   getDaysWithCount(days, min, max = null) {
