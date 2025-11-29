@@ -41,10 +41,11 @@ class Dashboard {
             
             <!-- Quick Stats Row -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-              ${this.renderStatCard('Goals', this.goals.length, '🎯', 'blue')}
-              ${this.renderStatCard('Tasks', this.tasks.length, '📝', 'green')}
-              ${this.renderStatCard('Learning', this.learning.length, '📚', 'purple')}
-              ${this.renderStatCard('Reflections', this.reflections.length, '✍️', 'orange')}
+              ${this.renderStatCard('Goals', this.goals.length, '🎯', 'text-blue-500')}
+${this.renderStatCard('Tasks', this.tasks.length, '📝', 'text-green-500')}
+${this.renderStatCard('Learning', this.learning.length, '📚', 'text-purple-500')}
+${this.renderStatCard('Reflections', this.reflections.length, '✍️', 'text-orange-500')}
+
             </div>
 
             <!-- To Do List -->
@@ -177,38 +178,38 @@ class Dashboard {
     `;
   }
 
-  
+
 
   async fetchGitHubActivity() {
-  try {
-    const res = await fetch("http://localhost:3000/api/github");
-    const data = await res.json();
+    try {
+      const res = await fetch("http://localhost:3000/api/github");
+      const data = await res.json();
 
-    const weeks = data.data.user.contributionsCollection.contributionCalendar.weeks;
-    const days = weeks.flatMap(w => w.contributionDays);
-    
-    // Use ALL days for the yearly view, not just last 30
-    const total = days.reduce((sum, d) => sum + d.contributionCount, 0);
+      const weeks = data.data.user.contributionsCollection.contributionCalendar.weeks;
+      const days = weeks.flatMap(w => w.contributionDays);
 
-    const container = document.getElementById("github-commits");
-    
-    if (container) {
+      // Use ALL days for the yearly view, not just last 30
+      const total = days.reduce((sum, d) => sum + d.contributionCount, 0);
 
-      // --- Month Header ---
-      const monthHeaders = weeks.map((week, index) => {
-        const firstDay = new Date(week.contributionDays[0].date);
-        const showLabel =
-          index === 0 ||
-          new Date(weeks[index - 1].contributionDays[0].date).getMonth() !==
+      const container = document.getElementById("github-commits");
+
+      if (container) {
+
+        // --- Month Header ---
+        const monthHeaders = weeks.map((week, index) => {
+          const firstDay = new Date(week.contributionDays[0].date);
+          const showLabel =
+            index === 0 ||
+            new Date(weeks[index - 1].contributionDays[0].date).getMonth() !==
             firstDay.getMonth();
-        return `
+          return `
           <div class="text-[10px] text-gray-500 h-4 w-3 text-center">
             ${showLabel ? firstDay.toLocaleString('en-US', { month: 'short' }) : ''}
           </div>
         `;
-      }).join('');
+        }).join('');
 
-      container.innerHTML = `
+        container.innerHTML = `
         <div class="w-full space-y-6">
         <!-- Contribution Graph -->
           <div class="space-y-4">
@@ -232,14 +233,14 @@ class Dashboard {
                   <div class="flex gap-1 min-w-max">
                     <div class="grid grid-rows-7 grid-flow-col gap-1">
                       ${weeks
-                        .map(week => 
-                          week.contributionDays
-                            .map(day => {
-                              const intensity = this.getCommitIntensity(day.contributionCount);
-                              const colorClass = this.getColorClass(intensity);
-                              const date = new Date(day.date);
+            .map(week =>
+              week.contributionDays
+                .map(day => {
+                  const intensity = this.getCommitIntensity(day.contributionCount);
+                  const colorClass = this.getColorClass(intensity);
+                  const date = new Date(day.date);
 
-                              return `
+                  return `
                                 <div class="relative group">
                                   <div 
                                     class="commit-box w-3 h-3 rounded-[2px] border border-gray-100 ${colorClass}"
@@ -255,10 +256,10 @@ class Dashboard {
                                   </div>
                                 </div>
                               `;
-                            })
-                            .join('')
-                        )
-                        .join('')}
+                })
+                .join('')
+            )
+            .join('')}
                     </div>
                   </div>
 
@@ -327,10 +328,10 @@ class Dashboard {
         </div>
       `;
 
-      this.animateGitHubCommits();
+        this.animateGitHubCommits();
 
-    }
-  } catch (err) {
+      }
+    } catch (err) {
       const container = document.getElementById("github-commits");
       if (container) {
         container.innerHTML = `
@@ -355,51 +356,50 @@ class Dashboard {
         `;
       }
     }
-}
-animateGitHubCommits() {
-  const container = document.getElementById("github-commits");
-  if (!container) return;
-
-  const commitBoxes = container.querySelectorAll(".grid-rows-7 > .relative"); // target each commit box
-
-  // Initially hide boxes
-  commitBoxes.forEach(box => {
-    box.style.opacity = 0;
-    box.style.transform = 'translateY(10px)';
-    box.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-  });
-
-  const observer = new IntersectionObserver((entries, obs) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        commitBoxes.forEach((box, index) => {
-          setTimeout(() => {
-            box.style.opacity = 1;
-            box.style.transform = 'translateY(0)';
-          }, index * 5); // stagger by 20ms per box
-        });
-        obs.disconnect(); // only trigger once
-      }
-    });
-  }, { threshold: 0.1 });
-
-  observer.observe(container);
-}
-
-
-  renderStatCard(title, value, color, iconPath) {
-    return `
-      <div class="card p-3 text-center">
-        <div class="${color} mb-1">
-          <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${iconPath}"></path>
-          </svg>
-        </div>
-        <div class="text-lg font-semibold text-gray-900">${value}</div>
-        <div class="text-xs text-muted-foreground mt-0.5">${title}</div>
-      </div>
-    `;
   }
+  animateGitHubCommits() {
+    const container = document.getElementById("github-commits");
+    if (!container) return;
+
+    const commitBoxes = container.querySelectorAll(".grid-rows-7 > .relative"); // target each commit box
+
+    // Initially hide boxes
+    commitBoxes.forEach(box => {
+      box.style.opacity = 0;
+      box.style.transform = 'translateY(10px)';
+      box.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    });
+
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          commitBoxes.forEach((box, index) => {
+            setTimeout(() => {
+              box.style.opacity = 1;
+              box.style.transform = 'translateY(0)';
+            }, index * 5); // stagger by 20ms per box
+          });
+          obs.disconnect(); // only trigger once
+        }
+      });
+    }, { threshold: 0.1 });
+
+    observer.observe(container);
+  }
+
+
+  renderStatCard(title, value, icon, color) {
+    return `
+    <div class="card p-3 text-center">
+      <div class="${color} mb-1 text-xl">
+        ${icon}
+      </div>
+      <div class="text-lg font-semibold text-gray-900">${value}</div>
+      <div class="text-xs text-muted-foreground mt-0.5">${title}</div>
+    </div>
+  `;
+  }
+
 
   // Helper methods for GitHub activity
   getCommitIntensity(count) {
@@ -410,19 +410,19 @@ animateGitHubCommits() {
   }
 
   getColorClass(intensity) {
-  const colors = [
-    'bg-[#ebedf0] hover:bg-[#dfe2e6]',      // 0 commits
-    'bg-[#9be9a8] hover:bg-[#8cdb99]',      // 1-2 commits
-    'bg-[#40c463] hover:bg-[#39b358]',      // 3-4 commits
-    'bg-[#30a14e] hover:bg-[#2d9549]',      // 5+ commits
-  ];
-  return colors[intensity];
-}
+    const colors = [
+      'bg-[#ebedf0] hover:bg-[#dfe2e6]',      // 0 commits
+      'bg-[#9be9a8] hover:bg-[#8cdb99]',      // 1-2 commits
+      'bg-[#40c463] hover:bg-[#39b358]',      // 3-4 commits
+      'bg-[#30a14e] hover:bg-[#2d9549]',      // 5+ commits
+    ];
+    return colors[intensity];
+  }
 
   getCurrentStreak(days) {
     let streak = 0;
     const today = new Date().toISOString().split('T')[0];
-    
+
     for (let i = days.length - 1; i >= 0; i--) {
       if (days[i].contributionCount > 0) {
         streak++;
@@ -526,10 +526,10 @@ animateGitHubCommits() {
 
   renderRecentReflection() {
     if (this.reflections.length === 0) return '';
-    
+
     const latest = this.reflections[this.reflections.length - 1];
     const date = new Date(latest.date).toLocaleDateString();
-    
+
     return `
       <div class="mt-4 pt-4 border-t">
         <h3 class="font-medium text-sm mb-2">Latest Reflection</h3>
@@ -581,7 +581,7 @@ animateGitHubCommits() {
   nextPhoto() {
     this.photoIndex = (this.photoIndex + 1) % this.photoList.length;
     const img = document.getElementById("photo-widget-img");
-    
+
     if (img) {
       img.style.opacity = "0";
       setTimeout(() => {
@@ -705,7 +705,7 @@ animateGitHubCommits() {
     btn?.addEventListener('click', () => {
       const val = input.value.trim();
       if (!val) return;
-      
+
       const item = {
         text: val,
         date: new Date().toISOString()
@@ -713,7 +713,7 @@ animateGitHubCommits() {
       this.reflections.push(item);
       Storage.set("dashboard_reflections", this.reflections);
       input.value = "";
-      
+
       // Show success feedback
       this.showNotification('Reflection saved successfully!');
       this.refreshReflectionDisplay();
