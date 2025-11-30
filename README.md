@@ -59,11 +59,11 @@ A visualization of how topics, subtopics, and sessions relate to each other.
 
 **Backend**
 - Vanilla JavaScript  
-- Node.js (used for fetching GitHub commit data and Google Drive public files)
+- Node.js
 
 **Storage**
 - Local Storage (current)  
-- Relational Database (planned, depending on scale)
+- NoSQL Database (planned)
 
 ---
 
