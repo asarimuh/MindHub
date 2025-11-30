@@ -41,11 +41,10 @@ class Dashboard {
             
             <!-- Quick Stats Row -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-              ${this.renderStatCard('Goals', this.goals.length, '🎯', 'text-blue-500')}
-${this.renderStatCard('Tasks', this.tasks.length, '📝', 'text-green-500')}
-${this.renderStatCard('Learning', this.learning.length, '📚', 'text-purple-500')}
-${this.renderStatCard('Reflections', this.reflections.length, '✍️', 'text-orange-500')}
-
+              ${this.renderStatCard('Goals', this.goals.length, '🎯', 'blue')}
+              ${this.renderStatCard('Tasks', this.tasks.length, '📝', 'green')}
+              ${this.renderStatCard('Learning', this.learning.length, '📚', 'purple')}
+              ${this.renderStatCard('Reflections', this.reflections.length, '✍️', 'orange')}
             </div>
 
             <!-- To Do List -->
@@ -225,43 +224,58 @@ ${this.renderStatCard('Reflections', this.reflections.length, '✍️', 'text-or
                 <div class="flex flex-col">
 
                   <!-- Month Header Row -->
-                  <div class="flex gap-1 min-w-max mb-1">
-                    ${monthHeaders}
-                  </div>
+                  <div 
+  class="grid auto-cols-fr grid-flow-col mb-1"
+  style="grid-template-rows: none; grid-auto-flow: column;"
+>
+  ${monthHeaders}
+</div>
 
                   <!-- Contribution Grid -->
-                  <div class="flex gap-1 min-w-max">
-                    <div class="grid grid-rows-7 grid-flow-col gap-1">
-                      ${weeks
-            .map(week =>
-              week.contributionDays
-                .map(day => {
-                  const intensity = this.getCommitIntensity(day.contributionCount);
-                  const colorClass = this.getColorClass(intensity);
-                  const date = new Date(day.date);
+<div class="w-full">
+  <div
+    class="grid auto-cols-fr grid-rows-7 gap-[3px]"
+    style="
+      grid-auto-flow: column;
+      --cell-size: min(max(0.5rem, calc(100vw / 110)), 1rem);
+    "
+  >
+    ${
+      weeks
+        .map(week =>
+          week.contributionDays
+            .map(day => {
+              const intensity = this.getCommitIntensity(day.contributionCount);
+              const colorClass = this.getColorClass(intensity);
+              const date = new Date(day.date);
 
-                  return `
-                                <div class="relative group">
-                                  <div 
-                                    class="commit-box w-3 h-3 rounded-[2px] border border-gray-100 ${colorClass}"
-                                    title="${date.toDateString()}: ${day.contributionCount} commits"
-                                  ></div>
+              return `
+                <div class="relative group">
+                  <div
+                    class="commit-box rounded-[2px] border border-gray-100 ${colorClass}"
+                    style="width: var(--cell-size); height: var(--cell-size);"
+                    title="${date.toDateString()}: ${day.contributionCount} commits"
+                  ></div>
 
-                                  <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:block z-50">
-                                    <div class="bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap shadow-lg">
-                                      <div class="font-semibold">${day.contributionCount} contributions</div>
-                                      <div class="text-gray-300 text-[10px] mt-0.5">${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
-                                    </div>
-                                    <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
-                                  </div>
-                                </div>
-                              `;
-                })
-                .join('')
-            )
-            .join('')}
+                  <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:block z-50">
+                    <div class="bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap shadow-lg">
+                      <div class="font-semibold">${day.contributionCount} contributions</div>
+                      <div class="text-gray-300 text-[10px] mt-0.5">
+                        ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </div>
                     </div>
+                    <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                   </div>
+                </div>
+              `;
+            })
+            .join('')
+        )
+        .join('')
+    }
+  </div>
+</div>
+
 
                 </div>
               </div>
@@ -280,16 +294,6 @@ ${this.renderStatCard('Reflections', this.reflections.length, '✍️', 'text-or
 
             </div>
           </div>
-
-          <!-- Stats Cards -->
-          <div class="grid grid-cols-3 gap-3">
-            ${this.renderStatCard('Total', total, 'text-blue-600', 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253')}
-
-            ${this.renderStatCard('Daily Avg', Math.round(total / 365), 'text-green-600', 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z')}
-
-            ${this.renderStatCard('Streak', this.getCurrentStreak(days), 'text-orange-600', 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6')}
-          </div>
-
 
           <!-- Activity Breakdown - Update to use full year data -->
           <div class="space-y-3">
@@ -400,13 +404,25 @@ ${this.renderStatCard('Reflections', this.reflections.length, '✍️', 'text-or
   `;
   }
 
-
   // Helper methods for GitHub activity
+
   getCommitIntensity(count) {
     if (count === 0) return 0;
     if (count <= 2) return 1;
     if (count <= 4) return 2;
     return 3;
+  }
+
+  renderGitStatCard(title, value, color, icon) {
+    return `
+    <div class="card p-3 text-center">
+      <div class="${color} mb-1 text-xl">
+        ${icon}
+      </div>
+      <div class="text-lg font-semibold text-gray-900">${value}</div>
+      <div class="text-xs text-muted-foreground mt-0.5">${title}</div>
+    </div>
+  `;
   }
 
   getColorClass(intensity) {
