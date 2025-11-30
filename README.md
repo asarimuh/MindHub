@@ -1,26 +1,86 @@
 # MindHub
 
-Website personal all in one.
+MindHub is a personal knowledge and learning hub built to centralize everything you study, explore, and manage. It combines note-taking, study tracking, resource organization, and personal dashboards into a single evolving project.
 
-## Features
-- To do list
-- Document Management
-- Study Tracker
-- News 
-- Stock News
-- Gallery
+## 📌 Overview
+
+MindHub acts as your private “second brain,” giving each topic its own structured space. Whether you're learning development, trading, personal growth, or anything else, MindHub keeps your progress, resources, and sessions organized and easy to revisit.
+
+## 🚀 Features
+
+### **Topic Spaces**
+Dedicated sections for each major subject (e.g., Frontend, Backend, Trading, Relationships), keeping content structured and separated.
+
+### **Study Sessions**
+Track learning sessions with:
+- Status & progress
+- Checklists
 - Notes
+- Related links
 
-## Installation
-1. Clone repo
-2. Install dependencies
-3. Run the app
+### **Resource Library**
+Save tutorials, articles, videos, courses, and repositories under each topic.
 
-## Usage
-Cara make project-nya:
-```bash
-npm start
-```
+### **Notes & Snippets**
+Write and store:
+- Long notes
+- Quick thoughts
+- Personal reflections
+- Code snippets
+
+### **Progress Tracking**
+Visualize milestones and overall learning progress per topic.
+
+### **Timeline & Activity Log**
+A chronological history of your study updates and completed sessions.
+
+### **Focus Mode**
+A distraction-free mode for learning sessions.
+
+### **Search & Filters**
+Quickly find topics, resources, or notes across your entire hub.
+
+### **Gallery (Planned)**
+A space for screenshots, visual materials, or archived content.
+
+### **Project & Task Management (Planned)**
+Lightweight project dashboard and todo list system.
+
+### **Knowledge Graph (Optional)**
+A visualization of how topics, subtopics, and sessions relate to each other.
+
+---
+
+## 🧱 Tech Stack
+
+**Frontend**
+- HTML  
+- Tailwind CSS  
+
+**Backend**
+- Vanilla JavaScript  
+- Node.js (used for fetching GitHub commit data and Google Drive public files)
+
+**Storage**
+- Local Storage (current)  
+- Relational Database (planned, depending on scale)
+
+---
+
+## 🎯 Purpose
+
+MindHub is built for self-learners who want their knowledge to stay organized, searchable, and actually useful. Instead of scattered bookmarks, random notes, or forgotten resources, everything lives in a single, structured ecosystem that grows with you.
+
+---
+
+## 🔮 Future Additions
+
+- Extended project management features  
+- More visualization tools  
+- Deeper analytics for study patterns  
+- Optional sync or cloud storage support  
+
+---
 
 ![img1](https://github.com/asarimuh/MindHub/blob/a6fffb6488676b1f443a6e96dfa95c499afe3f6a/v2-overview-img/v2-1.png)
 ![img2](https://github.com/asarimuh/MindHub/blob/a6fffb6488676b1f443a6e96dfa95c499afe3f6a/v2-overview-img/v2-2.png)
