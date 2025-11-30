@@ -159,7 +159,7 @@ class Dashboard {
                 </div>
                 <div>
                   <h2 class="text-xl font-semibold tracking-tight">GitHub Activity</h2>
-                  <p class="text-sm text-muted-foreground">Your 30-day contribution history</p>
+                  <p class="text-sm text-muted-foreground">Your contribution history</p>
                 </div>
               </div>
             </div>
@@ -498,7 +498,7 @@ class Dashboard {
     }
 
     return this.learning.map((item, index) => `
-      <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+      <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
         <div class="flex items-center gap-3 flex-1">
           <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
           <span class="text-sm flex-1">${item}</span>

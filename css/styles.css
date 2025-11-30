@@ -7,7 +7,7 @@
       --card-foreground: 222.2 84% 4.9%;
       --popover: 0 0% 100%;
       --popover-foreground: 222.2 84% 4.9%;
-      --primary: 221.2 83.2% 53.3%;
+      --primary: #0F172A;
       --primary-foreground: 210 40% 98%;
       --secondary: 210 40% 96%;
       --secondary-foreground: 222.2 84% 4.9%;
@@ -81,7 +81,7 @@
     }
     
     .btn-primary {
-      background-color: hsl(var(--primary));
+      background-color: var(--primary);
       color: hsl(var(--primary-foreground));
       border: 1px solid hsl(var(--primary));
     }
@@ -305,4 +305,8 @@
 
 .commit-box {
   z-index: 1;
+}
+
+.btn-primary:hover {
+  background-color: #27354a;
 }
