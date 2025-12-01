@@ -1,4 +1,3 @@
-// Helper functions
 class Helpers {
   static formatDate(dateString) {
     const date = new Date(dateString);

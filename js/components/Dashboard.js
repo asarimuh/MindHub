@@ -32,9 +32,20 @@ class Dashboard {
     return `
       <div class="dashboard-container">
         <!-- Header -->
-        <div class="mb-8">
-          <h1 class="text-3xl font-semibold tracking-tight mb-2">Dashboard</h1>
-          <p class="text-muted-foreground">Welcome to your personal workspace</p>
+        <div class="grid grid-cols-1 lg:grid-cols-6 gap-2 mb-6">
+          <div class="mb-8 lg:col-span-2">
+            <h1 class="text-3xl font-semibold tracking-tight mb-2">Dashboard</h1>
+            <p class="text-muted-foreground">Welcome to your personal workspace</p>
+          </div>
+          <div class="lg:col-span-4">
+          <!-- Quick Stats Row -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              ${this.renderStatCard('Tasks', this.tasks.length, '📝', 'green')}
+              ${this.renderStatCard('Learning', this.learning.length, '📚', 'purple')}
+              ${this.renderStatCard('Goals', this.goals.length, '🎯', 'blue')}
+              ${this.renderStatCard('Reflections', this.reflections.length, '✍️', 'orange')}
+            </div>
+          </div>
         </div>
 
         <!-- Main Grid Layout -->
@@ -43,14 +54,6 @@ class Dashboard {
           <!-- Left Column -->
           <div class="lg:col-span-2 space-y-6">
             
-            <!-- Quick Stats Row -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-              ${this.renderStatCard('Goals', this.goals.length, '🎯', 'blue')}
-              ${this.renderStatCard('Tasks', this.tasks.length, '📝', 'green')}
-              ${this.renderStatCard('Learning', this.learning.length, '📚', 'purple')}
-              ${this.renderStatCard('Reflections', this.reflections.length, '✍️', 'orange')}
-            </div>
-
             <!-- Enhanced Task Manager -->
             <div class="card p-6">
               <div class="flex items-center justify-between mb-4">

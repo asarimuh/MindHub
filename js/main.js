@@ -8,8 +8,8 @@ class App {
 
   init() {
     this.loadComponents();
-    this.setupNavigation();
-    this.setupEventListeners();
+    // this.setupNavigation();
+    // this.setupEventListeners();
     this.renderSidebar();
     this.navigateTo('dashboard');
   }
@@ -26,13 +26,13 @@ class App {
     };
   }
 
-  setupNavigation() {
+  // setupNavigation() {
     // Navigation will be handled by sidebar click events
-  }
+  // }
 
-  setupEventListeners() {
+  // setupEventListeners() {
     // Global event listeners can go here
-  }
+  // }
 
   renderSidebar() {
     const sidebarNav = document.getElementById('sidebar-nav');
