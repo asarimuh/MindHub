@@ -14,6 +14,7 @@ class Dashboard {
 
     // Photo widget
     this.photoIndex = 0;
+    this.memoryActive = Storage.get("memory_board_active") ?? true;
     this.photoList = Storage.get("dashboard_photos") || [
       "./assets/img/img1.jpg",
       "./assets/img/img2.jpg",
@@ -32,8 +33,8 @@ class Dashboard {
     return `
       <div class="dashboard-container">
         <!-- Header -->
-        <div class="grid grid-cols-1 lg:grid-cols-6 gap-2 mb-6">
-          <div class="mb-8 lg:col-span-2">
+        <div class="grid grid-cols-1 lg:grid-cols-8 gap-2 mb-6">
+          <div class="mb-8 lg:col-span-4">
             <h1 class="text-3xl font-semibold tracking-tight mb-2">Dashboard</h1>
             <p class="text-muted-foreground">Welcome to your personal workspace</p>
           </div>
@@ -49,10 +50,10 @@ class Dashboard {
         </div>
 
         <!-- Main Grid Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
           
           <!-- Left Column -->
-          <div class="lg:col-span-2 space-y-6">
+          <div class="lg:col-span-3 space-y-6">
             
             <!-- Enhanced Task Manager -->
             <div class="card p-6">
@@ -150,8 +151,13 @@ class Dashboard {
 
             <!-- Photo Widget -->
             <div class="card p-6">
+            
               <div class="flex items-center justify-between mb-4">
+              <button id="photo-toggle" class="text-sm text-blue-600 hover:text-blue-800">
+                Disable
+              </button>
                 <h2 class="text-xl font-semibold">Memory Board</h2>
+                
                 <button id="photo-next" class="text-sm text-blue-600 hover:text-blue-800">Next</button>
               </div>
               <div class="text-center">
@@ -208,8 +214,6 @@ class Dashboard {
       </div>
     `;
   }
-
-
 
   async fetchGitHubActivity() {
     try {
@@ -782,14 +786,54 @@ class Dashboard {
      PHOTO WIDGET
 ------------------------------ */
 initPhotoWidget() {
-  this.photoInterval = setInterval(() => {
-    this.nextPhoto();
-  }, 5000);
+  this.photoIndex = 0;
+  this.memoryActive = Storage.get("memory_board_active") ?? true;
 
-  document.getElementById('photo-next')?.addEventListener('click', () => {
-    this.nextPhoto();
-  });
+  this.widget = document.getElementById("photo-widget");
+  this.img = document.getElementById("photo-widget-img");
+
+  // Toggle button listener
+  document.getElementById("photo-toggle")
+    ?.addEventListener("click", () => this.toggleMemoryBoard());
+
+  // Manual next button
+  document.getElementById("photo-next")
+    ?.addEventListener("click", () => this.nextPhoto());
+
+  // Auto-slide only if enabled
+  if (this.memoryActive) {
+    this.startAutoSlide();
+  } else {
+    this.widget.style.display = "none";
+    document.getElementById("photo-toggle").textContent = "Enable";
+  }
 }
+
+startAutoSlide() {
+  this.photoInterval = setInterval(() => {
+    if (this.memoryActive) {
+      this.nextPhoto();
+    }
+  }, 5000);
+}
+
+toggleMemoryBoard() {
+  this.memoryActive = !this.memoryActive;
+  Storage.set("memory_board_active", this.memoryActive);
+
+  const toggleBtn = document.getElementById("photo-toggle");
+
+  if (!this.memoryActive) {
+    this.widget.style.display = "none";
+    clearInterval(this.photoInterval);
+    toggleBtn.textContent = "Enable";
+  } else {
+    this.widget.style.display = "block";
+    this.startAutoSlide();
+    toggleBtn.textContent = "Disable";
+  }
+}
+
 
 nextPhoto() {
   const img = document.getElementById("photo-widget-img");

@@ -28,10 +28,96 @@
   --sidebar-border: #e5e7eb;
 }
 
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+/* Sidebar Base */
+aside {
+  background: white;
+  border-right: 1px solid #f3f4f6;
+  box-shadow: rgba(17, 12, 46, 0.067) 0px 48px 50px 0px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  z-index: 40;
+}
+
+/* Sidebar links */
+#sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  color: #374151;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 2px 0;
+  border: 1px solid transparent;
+}
+
+/* Hover */
+#sidebar-nav a:hover {
+  background: #f9fafb;
+  color: #111827;
+  border-color: #f3f4f6;
+}
+
+/* Active link */
+#sidebar-nav .active {
+  background: #111827;
+  color: white !important;
+  border-color: #111827;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Active link hover */
+#sidebar-nav .active:hover {
+  background: #1f2937;
+  border-color: #1f2937;
+}
+
+/* Icon styling inside links */
+#sidebar-nav a img,
+#sidebar-nav a svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+#sidebar-nav a:hover img,
+#sidebar-nav a:hover svg {
+  opacity: 1;
+}
+
+/* Active link icons */
+#sidebar-nav .active img,
+#sidebar-nav .active svg {
+  opacity: 0.95;
+  filter: brightness(0) invert(1);
+}
+
+/* Scrollbar styling for nav */
+#sidebar-nav::-webkit-scrollbar {
+  width: 4px;
+}
+
+#sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#sidebar-nav::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 20px;
+}
+
+#sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db;
+}
+
+/* Main content offset */
+main {
+  margin-left: 16rem; /* 256px = w-64 */
 }
 
 .card {
