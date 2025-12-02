@@ -158,7 +158,7 @@ class Dashboard {
                 <div id="photo-widget" class="photo-widget w-full aspect-square rounded-xl overflow-hidden shadow-lg mb-3 mx-auto">
                   <img id="photo-widget-img"
                        src="${this.photoList[0]}"
-                       class="w-full h-full object-cover transition-all duration-500"
+                       class="memory-image w-full h-full object-cover transition-all duration-500"
                        alt="Special memory" />
                 </div>
               </div>
@@ -397,7 +397,7 @@ class Dashboard {
     const container = document.getElementById("github-commits");
     if (!container) return;
 
-    const commitBoxes = container.querySelectorAll(".grid-rows-7 > .relative"); // target each commit box
+    const commitBoxes = container.querySelectorAll(".commit-box"); 
 
     // Initially hide boxes
     commitBoxes.forEach(box => {
@@ -413,7 +413,7 @@ class Dashboard {
             setTimeout(() => {
               box.style.opacity = 1;
               box.style.transform = 'translateY(0)';
-            }, index * 5); // stagger by 20ms per box
+            }, index * 5); 
           });
           obs.disconnect(); // only trigger once
         }
@@ -778,33 +778,37 @@ class Dashboard {
     this.fetchGitHubActivity();
   }
 
-  /* ------------------------------
+/* ------------------------------
      PHOTO WIDGET
-  ------------------------------ */
-  initPhotoWidget() {
-    // Auto-rotate every 5 seconds
-    this.photoInterval = setInterval(() => {
-      this.nextPhoto();
-    }, 5000);
+------------------------------ */
+initPhotoWidget() {
+  this.photoInterval = setInterval(() => {
+    this.nextPhoto();
+  }, 5000);
 
-    // Manual next button
-    document.getElementById('photo-next')?.addEventListener('click', () => {
-      this.nextPhoto();
-    });
-  }
+  document.getElementById('photo-next')?.addEventListener('click', () => {
+    this.nextPhoto();
+  });
+}
 
-  nextPhoto() {
-    this.photoIndex = (this.photoIndex + 1) % this.photoList.length;
-    const img = document.getElementById("photo-widget-img");
+nextPhoto() {
+  const img = document.getElementById("photo-widget-img");
+  if (!img) return;
 
-    if (img) {
-      img.style.opacity = "0";
-      setTimeout(() => {
-        img.src = this.photoList[this.photoIndex];
-        img.style.opacity = "1";
-      }, 300);
-    }
-  }
+  this.photoIndex = (this.photoIndex + 1) % this.photoList.length;
+  const nextSrc = this.photoList[this.photoIndex];
+
+  img.style.transition = "opacity 0.3s ease";
+  img.style.opacity = "0";
+
+  setTimeout(() => {
+    img.src = nextSrc;
+
+    img.offsetHeight;
+
+    img.style.opacity = "1";
+  }, 300);
+}
 
   /* ------------------------------
      GOALS
