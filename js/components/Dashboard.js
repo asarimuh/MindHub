@@ -8,7 +8,7 @@ class Dashboard {
     this.tasks = Storage.get("dashboard_tasks") || [];
     this.completedTasks = Storage.get("dashboard_completed_tasks") || [];
     this.currentTaskFilter = Storage.get("dashboard_task_filter", "all");
-    
+
     this.learning = Storage.get("dashboard_learning") || [];
     this.reflections = Storage.get("dashboard_reflections") || [];
 
@@ -26,7 +26,7 @@ class Dashboard {
       "./assets/img/img8.jpg",
       "./assets/img/img9.jpg",
       "./assets/img/img10.jpg",
-    ];  
+    ];
   }
 
   render() {
@@ -260,58 +260,41 @@ class Dashboard {
                 <div class="flex flex-col">
 
                   <!-- Month Header Row -->
-                  <div 
-  class="grid auto-cols-fr grid-flow-col mb-1"
-  style="grid-template-rows: none; grid-auto-flow: column;"
->
-  ${monthHeaders}
-</div>
+                  <div class="grid auto-cols-fr grid-flow-col mb-1" style="grid-template-rows: none; grid-auto-flow: column;">
+                    ${monthHeaders}
+                  </div>
 
                   <!-- Contribution Grid -->
-<div class="w-full">
-  <div
-    class="grid auto-cols-fr grid-rows-7 gap-[3px]"
-    style="
-      grid-auto-flow: column;
-      --cell-size: min(max(0.5rem, calc(100vw / 110)), 1rem);
-    "
-  >
-    ${
-      weeks
-        .map(week =>
-          week.contributionDays
-            .map(day => {
-              const intensity = this.getCommitIntensity(day.contributionCount);
-              const colorClass = this.getColorClass(intensity);
-              const date = new Date(day.date);
-
-              return `
-                <div class="relative group">
-                  <div
-                    class="commit-box rounded-[2px] border border-gray-100 ${colorClass}"
-                    style="width: var(--cell-size); height: var(--cell-size);"
-                    title="${date.toDateString()}: ${day.contributionCount} commits"
-                  ></div>
-
-                  <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:block z-50">
-                    <div class="bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap shadow-lg">
-                      <div class="font-semibold">${day.contributionCount} contributions</div>
-                      <div class="text-gray-300 text-[10px] mt-0.5">
-                        ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      </div>
+                  <div class="w-full">
+                    <div class="grid auto-cols-fr grid-rows-7 gap-[3px]" style="grid-auto-flow: column;--cell-size: min(max(0.5rem, calc(100vw / 110)), 1rem);">
+                      ${weeks.map(week =>
+                                week.contributionDays
+                                  .map(day => {
+                                    const intensity = this.getCommitIntensity(day.contributionCount);
+                                    const colorClass = this.getColorClass(intensity);
+                                    const date = new Date(day.date);
+                                  
+                                    return `
+                                  <div class="relative group">
+                                    <div class="commit-box rounded-[2px] border border-gray-100 ${colorClass}" style="width: var(--cell-size); height: var(--cell-size);" title="${date.toDateString()}: ${day.contributionCount} commits"></div>
+                                    <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 hidden group-hover:block z-50">
+                                      <div class="bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap shadow-lg">
+                                        <div class="font-semibold">${day.contributionCount} contributions</div>
+                                        <div class="text-gray-300 text-[10px] mt-0.5">
+                                          ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                        </div>
+                                      </div>
+                                      <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                                    </div>
+                                  </div>
+                                `;
+                                  })
+                                  .join('')
+                              )
+                              .join('')
+                            }
                     </div>
-                    <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                   </div>
-                </div>
-              `;
-            })
-            .join('')
-        )
-        .join('')
-    }
-  </div>
-</div>
-
 
                 </div>
               </div>
@@ -401,7 +384,7 @@ class Dashboard {
     const container = document.getElementById("github-commits");
     if (!container) return;
 
-    const commitBoxes = container.querySelectorAll(".commit-box"); 
+    const commitBoxes = container.querySelectorAll(".commit-box");
 
     // Initially hide boxes
     commitBoxes.forEach(box => {
@@ -417,7 +400,7 @@ class Dashboard {
             setTimeout(() => {
               box.style.opacity = 1;
               box.style.transform = 'translateY(0)';
-            }, index * 5); 
+            }, index * 5);
           });
           obs.disconnect(); // only trigger once
         }
@@ -505,11 +488,10 @@ class Dashboard {
 
     return filters.map(filter => `
       <button
-        class="filter-tab px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-          this.currentTaskFilter === filter.id
-            ? 'bg-white text-blue-600 shadow-sm'
-            : 'text-gray-600 hover:text-gray-900'
-        }"
+        class="filter-tab px-3 py-2 rounded-md text-sm font-medium transition-colors ${this.currentTaskFilter === filter.id
+        ? 'bg-white text-blue-600 shadow-sm'
+        : 'text-gray-600 hover:text-gray-900'
+      }"
         data-filter="${filter.id}"
       >
         <span class="mr-1">${filter.icon}</span>
@@ -550,7 +532,7 @@ class Dashboard {
 
   renderTaskList() {
     const tasks = this.getTasksByFilter(this.currentTaskFilter);
-    
+
     if (tasks.length === 0) {
       return this.renderTaskEmptyState();
     }
@@ -690,7 +672,7 @@ class Dashboard {
     }
   }
 
- renderLearningList() {
+  renderLearningList() {
     if (this.learning.length === 0) {
       return `
         <div class="text-center py-4 text-gray-500">
@@ -782,77 +764,77 @@ class Dashboard {
     this.fetchGitHubActivity();
   }
 
-/* ------------------------------
-     PHOTO WIDGET
------------------------------- */
-initPhotoWidget() {
-  this.photoIndex = 0;
-  this.memoryActive = Storage.get("memory_board_active") ?? true;
+  /* ------------------------------
+       PHOTO WIDGET
+  ------------------------------ */
+  initPhotoWidget() {
+    this.photoIndex = 0;
+    this.memoryActive = Storage.get("memory_board_active") ?? true;
 
-  this.widget = document.getElementById("photo-widget");
-  this.img = document.getElementById("photo-widget-img");
+    this.widget = document.getElementById("photo-widget");
+    this.img = document.getElementById("photo-widget-img");
 
-  // Toggle button listener
-  document.getElementById("photo-toggle")
-    ?.addEventListener("click", () => this.toggleMemoryBoard());
+    // Toggle button listener
+    document.getElementById("photo-toggle")
+      ?.addEventListener("click", () => this.toggleMemoryBoard());
 
-  // Manual next button
-  document.getElementById("photo-next")
-    ?.addEventListener("click", () => this.nextPhoto());
+    // Manual next button
+    document.getElementById("photo-next")
+      ?.addEventListener("click", () => this.nextPhoto());
 
-  // Auto-slide only if enabled
-  if (this.memoryActive) {
-    this.startAutoSlide();
-  } else {
-    this.widget.style.display = "none";
-    document.getElementById("photo-toggle").textContent = "Enable";
-  }
-}
-
-startAutoSlide() {
-  this.photoInterval = setInterval(() => {
+    // Auto-slide only if enabled
     if (this.memoryActive) {
-      this.nextPhoto();
+      this.startAutoSlide();
+    } else {
+      this.widget.style.display = "none";
+      document.getElementById("photo-toggle").textContent = "Enable";
     }
-  }, 5000);
-}
-
-toggleMemoryBoard() {
-  this.memoryActive = !this.memoryActive;
-  Storage.set("memory_board_active", this.memoryActive);
-
-  const toggleBtn = document.getElementById("photo-toggle");
-
-  if (!this.memoryActive) {
-    this.widget.style.display = "none";
-    clearInterval(this.photoInterval);
-    toggleBtn.textContent = "Enable";
-  } else {
-    this.widget.style.display = "block";
-    this.startAutoSlide();
-    toggleBtn.textContent = "Disable";
   }
-}
+
+  startAutoSlide() {
+    this.photoInterval = setInterval(() => {
+      if (this.memoryActive) {
+        this.nextPhoto();
+      }
+    }, 5000);
+  }
+
+  toggleMemoryBoard() {
+    this.memoryActive = !this.memoryActive;
+    Storage.set("memory_board_active", this.memoryActive);
+
+    const toggleBtn = document.getElementById("photo-toggle");
+
+    if (!this.memoryActive) {
+      this.widget.style.display = "none";
+      clearInterval(this.photoInterval);
+      toggleBtn.textContent = "Enable";
+    } else {
+      this.widget.style.display = "block";
+      this.startAutoSlide();
+      toggleBtn.textContent = "Disable";
+    }
+  }
 
 
-nextPhoto() {
-  const img = document.getElementById("photo-widget-img");
-  if (!img) return;
+  nextPhoto() {
+    const img = document.getElementById("photo-widget-img");
+    if (!img) return;
 
-  this.photoIndex = (this.photoIndex + 1) % this.photoList.length;
-  const nextSrc = this.photoList[this.photoIndex];
+    this.photoIndex = (this.photoIndex + 1) % this.photoList.length;
+    const nextSrc = this.photoList[this.photoIndex];
 
-  img.style.transition = "opacity 0.3s ease";
-  img.style.opacity = "0";
+    img.style.transition = "opacity 0.3s ease";
+    img.style.opacity = "0";
 
-  setTimeout(() => {
-    img.src = nextSrc;
+    setTimeout(() => {
+      img.src = nextSrc;
 
-    img.offsetHeight;
+      img.offsetHeight;
 
-    img.style.opacity = "1";
-  }, 300);
-}
+      img.style.opacity = "1";
+    }, 300);
+  }
 
   /* ------------------------------
      GOALS
@@ -923,32 +905,32 @@ nextPhoto() {
   }
 
   initTaskFilterTabs() {
-  document.querySelectorAll('.filter-tab').forEach(tab => {
-    tab.addEventListener('click', (e) => {
-      this.currentTaskFilter = e.currentTarget.dataset.filter;
-      Storage.set("dashboard_task_filter", this.currentTaskFilter);
-      
-      // Update active tab UI immediately
-      this.updateActiveTabUI();
-      this.refreshTasksList();
-    });
-  });
-}
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        this.currentTaskFilter = e.currentTarget.dataset.filter;
+        Storage.set("dashboard_task_filter", this.currentTaskFilter);
 
-updateActiveTabUI() {
-  // Remove active class from all tabs
-  document.querySelectorAll('.filter-tab').forEach(tab => {
-    tab.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
-    tab.classList.add('text-gray-600', 'hover:text-gray-900');
-  });
-  
-  // Add active class to current filter tab
-  const activeTab = document.querySelector(`.filter-tab[data-filter="${this.currentTaskFilter}"]`);
-  if (activeTab) {
-    activeTab.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
-    activeTab.classList.remove('text-gray-600', 'hover:text-gray-900');
+        // Update active tab UI immediately
+        this.updateActiveTabUI();
+        this.refreshTasksList();
+      });
+    });
   }
-}
+
+  updateActiveTabUI() {
+    // Remove active class from all tabs
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+      tab.classList.add('text-gray-600', 'hover:text-gray-900');
+    });
+
+    // Add active class to current filter tab
+    const activeTab = document.querySelector(`.filter-tab[data-filter="${this.currentTaskFilter}"]`);
+    if (activeTab) {
+      activeTab.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+      activeTab.classList.remove('text-gray-600', 'hover:text-gray-900');
+    }
+  }
 
   initTaskDragAndDrop() {
     const taskList = document.getElementById('task-list');
@@ -963,7 +945,7 @@ updateActiveTabUI() {
             const taskId = el.dataset.taskId;
             return this.tasks.find(task => task.id === taskId);
           }).filter(task => task);
-          
+
           this.tasks = newTasksOrder;
           this.saveTasks();
         }
@@ -977,7 +959,7 @@ updateActiveTabUI() {
       if (e.target.classList.contains('task-check')) {
         this.toggleTaskCompletion(e.target.dataset.taskId);
       }
-      
+
       if (e.target.classList.contains('subtask-check')) {
         this.toggleSubtaskCompletion(
           e.target.dataset.taskId,
@@ -1017,7 +999,7 @@ updateActiveTabUI() {
     if (taskIndex !== -1) {
       const task = this.tasks[taskIndex];
       task.completed = !task.completed;
-      
+
       if (task.completed) {
         // Move to completed tasks
         const completedTask = {
@@ -1025,11 +1007,11 @@ updateActiveTabUI() {
           completedAt: new Date().toISOString()
         };
         this.completedTasks.unshift(completedTask);
-        
+
         // Remove from active tasks
         this.tasks.splice(taskIndex, 1);
       }
-      
+
       this.saveAllTaskData();
       this.refreshTasksList();
     }
@@ -1047,7 +1029,7 @@ updateActiveTabUI() {
   addSubtask(taskId) {
     const task = this.tasks.find(t => t.id === taskId);
     const input = document.querySelector(`.subtask-input[data-task-id="${taskId}"]`);
-    
+
     if (task && input) {
       const title = input.value.trim();
       if (title) {
@@ -1083,7 +1065,7 @@ updateActiveTabUI() {
 
   showTaskHistory() {
     const completedCount = this.completedTasks.length;
-    const historyText = this.completedTasks.map(task => 
+    const historyText = this.completedTasks.map(task =>
       `✅ ${task.title} - ${new Date(task.completedAt).toLocaleDateString()}`
     ).join('\n');
 

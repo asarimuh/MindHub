@@ -64,17 +64,16 @@ aside {
 
 /* Active link */
 #sidebar-nav .active {
-  background: #111827;
-  color: white !important;
-  border-color: #111827;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  /* background: #111827; */
+  color: rgb(0, 0, 0) !important;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 
 /* Active link hover */
-#sidebar-nav .active:hover {
+/* #sidebar-nav .active:hover {
   background: #1f2937;
   border-color: #1f2937;
-}
+} */
 
 /* Icon styling inside links */
 #sidebar-nav a img,
@@ -89,14 +88,6 @@ aside {
 #sidebar-nav a:hover svg {
   opacity: 1;
 }
-
-/* Active link icons */
-#sidebar-nav .active img,
-#sidebar-nav .active svg {
-  opacity: 0.95;
-  filter: brightness(0) invert(1);
-}
-
 /* Scrollbar styling for nav */
 #sidebar-nav::-webkit-scrollbar {
   width: 4px;
@@ -190,11 +181,6 @@ main {
 
 .sidebar-item:hover {
   background-color: hsl(var(--accent));
-}
-
-.sidebar-item.active {
-  background-color: hsl(var(--primary) / 0.1);
-  color: hsl(var(--primary));
 }
 
 .checklist-item {
