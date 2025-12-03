@@ -37,16 +37,16 @@ class Dashboard {
           <div class="mb-8 lg:col-span-4">
             <h1 class="text-3xl font-semibold tracking-tight mb-2">Dashboard</h1>
             <p class="text-muted-foreground">Welcome to your personal workspace</p>
-          </div>
-          <div class="lg:col-span-4">
-          <!-- Quick Stats Row -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-              ${this.renderStatCard('Tasks', this.tasks.length, '📝', 'green')}
-              ${this.renderStatCard('Learning', this.learning.length, '📚', 'purple')}
-              ${this.renderStatCard('Goals', this.goals.length, '🎯', 'blue')}
-              ${this.renderStatCard('Reflections', this.reflections.length, '✍️', 'orange')}
             </div>
-          </div>
+            <div class="lg:col-span-4">
+            <!-- Quick Stats Row -->
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                ${this.renderStatCard('Tasks', this.tasks.length, '📝', 'green')}
+                ${this.renderStatCard('Learning', this.learning.length, '📚', 'purple')}
+                ${this.renderStatCard('Goals', this.goals.length, '🎯', 'blue')}
+                ${this.renderStatCard('Reflections', this.reflections.length, '✍️', 'orange')}
+              </div>
+            </div>
         </div>
 
         <!-- Main Grid Layout -->

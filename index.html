@@ -96,9 +96,10 @@
   </div>
 
   <!-- JavaScript Files -->
+   
   <script src="js/utils/storage.js"></script>
   <script src="js/utils/helpers.js"></script>
-  <script src="js/components/Dashboard.js"></script>
+  <!-- <script src="js/components/Dashboard.js"></script> -->
   <script src="js/components/Documents.js"></script>
   <script src="js/components/Gallery.js"></script>
   <script src="js/components/Stocks.js"></script>
@@ -107,6 +108,21 @@
   <script src="js/components/StudyTracker.js"></script>
   <script src="js/main.js"></script>
   <script src="js/sidebarCallendar.js"></script>
+
+<!-- Dashboard core & features (new files) -->
+<script src="js/components/dashboard/core/state.js"></script>
+<script src="js/components/dashboard/core/sections.js"></script>
+<script src="js/components/dashboard/core/render.js"></script>
+
+<script src="js/components/dashboard/features/photo.js"></script>
+<script src="js/components/dashboard/features/tasks.js"></script>
+<script src="js/components/dashboard/features/goals.js"></script>
+<script src="js/components/dashboard/features/learning.js"></script>
+<script src="js/components/dashboard/features/reflection.js"></script>
+<script src="js/components/dashboard/features/github.js"></script>
+
+<!-- The orchestrator that main.js expects -->
+<script src="js/components/dashboard/Dashboard.js"></script>
 </body>
 
 </html>
