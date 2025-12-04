@@ -115,7 +115,21 @@ class App {
   }
 }
 
-// Initialize the application when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+// Initialize the application when DOM is loaded AND loader is ready
+const initApp = () => {
   window.app = new App();
-});
+};
+
+// Wait for both DOM and loader
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    window.loaderReady.then(initApp).catch(err => {
+      console.error('Failed to initialize app:', err);
+    });
+  });
+} else {
+  // DOM already loaded
+  window.loaderReady.then(initApp).catch(err => {
+    console.error('Failed to initialize app:', err);
+  });
+}

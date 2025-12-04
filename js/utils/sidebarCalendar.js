@@ -36,7 +36,7 @@
         
         for (let i = startingDay - 1; i >= 0; i--) {
           const dayElement = document.createElement('div');
-          dayElement.className = 'calendar-day other-month';
+          dayElement.className = 'calendar-day text-center text-xs py-1.5 rounded-md cursor-default transition-all duration-200 h-7 flex items-center justify-center text-gray-300';
           dayElement.textContent = previousLastDay - i;
           calendarDays.appendChild(dayElement);
         }
@@ -44,14 +44,14 @@
         // Add days of displayed month
         for (let day = 1; day <= totalDays; day++) {
           const dayElement = document.createElement('div');
-          dayElement.className = 'calendar-day';
+          dayElement.className = 'calendar-day text-center text-xs py-1.5 rounded-md cursor-default transition-all duration-200 h-7 flex items-center justify-center text-gray-900';
           dayElement.textContent = day;
-          
+
           // Highlight today only if viewing the current month
           if (day === currentDate && displayedMonth === currentMonth && displayedYear === currentYear) {
-            dayElement.classList.add('today');
+            dayElement.classList.add('bg-[#0F172A]', 'text-white', 'font-semibold');
           }
-          
+
           calendarDays.appendChild(dayElement);
         }
         
@@ -62,7 +62,7 @@
         
         for (let day = 1; day <= remainingCells; day++) {
           const dayElement = document.createElement('div');
-          dayElement.className = 'calendar-day other-month';
+          dayElement.className = 'calendar-day text-center text-xs py-1.5 rounded-md cursor-default transition-all duration-200 h-7 flex items-center justify-center text-gray-300';
           dayElement.textContent = day;
           calendarDays.appendChild(dayElement);
         }
