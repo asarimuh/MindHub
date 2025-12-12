@@ -1,7 +1,7 @@
 /* Study Tracker Styles */
 .kanban-column {
   min-height: 600px;
-  background-color: hsl(var(--secondary));
+  background-color: #f7f7fb;
   border-radius: calc(var(--radius) + 0.25rem);
   padding: 1rem;
 }

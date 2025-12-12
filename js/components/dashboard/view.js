@@ -237,3 +237,34 @@ function renderRecentReflection(reflections) {
     </div>
   `;
 }
+
+function renderReflectionList(reflections) {
+  if (!reflections || reflections.length === 0) {
+    return `
+      <div class="text-center py-4 text-gray-500">
+        <p class="text-sm">No reflections yet</p>
+      </div>
+    `;
+  }
+
+  return reflections.map((item, index) => {
+    const date = new Date(item.date).toLocaleDateString();
+    return `
+      <div class="flex items-start justify-between p-3 bg-gray-50 rounded-lg mb-2">
+        <div class="flex-1 pr-3">
+          <div class="text-sm text-gray-800 mb-1">${item.text}</div>
+          <div class="text-xs text-muted-foreground">${date}</div>
+        </div>
+        <button class="delete-btn text-gray-400 hover:text-red-500 transition-colors p-2"
+                data-index="${index}"
+                data-list="reflections"
+                title="Remove reflection">
+          <!-- X icon -->
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    `;
+  }).join('');
+}

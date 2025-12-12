@@ -10,26 +10,7 @@ class Stocks {
   }
 
   render() {
-    return `
-      <div class="mb-8">
-        <h1 class="text-3xl font-semibold tracking-tight mb-2">Stocks</h1>
-        <p class="text-muted-foreground">Your stock watchlist and market data</p>
-      </div>
-
-      <div class="card p-6">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">Stock Watchlist</h2>
-          <button id="manage-watchlist-btn" class="text-sm text-blue-600 hover:text-blue-800">Manage</button>
-        </div>
-        
-        <div class="space-y-4">
-          ${this.watchlist.map(stock => this.renderStockItem(stock)).join('')}
-        </div>
-      </div>
-
-      ${this.renderMarketSummary()}
-      ${this.renderWatchlistModal()}
-    `;
+    return renderStocksPage(this.watchlist);
   }
 
   renderStockItem(stock) {
@@ -130,7 +111,7 @@ class Stocks {
 
   init() {
     this.setupEventListeners();
-    this.initializeCharts();
+    StocksService.initializeCharts(this.watchlist);
   }
 
   setupEventListeners() {
@@ -172,7 +153,7 @@ class Stocks {
 
   updateWatchlistDisplay() {
     const container = document.getElementById('current-watchlist');
-    container.innerHTML = this.watchlist.map(stock => this.renderWatchlistItem(stock)).join('');
+    container.innerHTML = this.watchlist.map(stock => renderWatchlistItem(stock)).join('');
     
     // Re-attach event listeners to remove buttons
     container.querySelectorAll('.remove-stock').forEach(button => {
@@ -181,6 +162,8 @@ class Stocks {
         this.removeStock(symbol);
       });
     });
+    // Recreate charts for any newly added items
+    StocksService.initializeCharts(this.watchlist);
   }
 
   removeStock(symbol) {
@@ -189,52 +172,14 @@ class Stocks {
   }
 
   initializeCharts() {
-    // Initialize mini stock charts
-    this.watchlist.forEach(stock => {
-      this.createMiniChart(stock.symbol.toLowerCase(), stock.trend);
-    });
+    StocksService.initializeCharts(this.watchlist);
   }
 
   createMiniChart(canvasId, trend) {
-    const ctx = document.getElementById(`${canvasId}-chart`).getContext('2d');
-    const data = this.generateRandomStockData(5, trend);
-    const color = trend === 'up' ? '#10b981' : '#ef4444';
-    
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ['', '', '', '', ''],
-        datasets: [{
-          data: data,
-          borderColor: color,
-          backgroundColor: trend === 'up' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-          borderWidth: 2,
-          tension: 0.4,
-          fill: true,
-          pointRadius: 0
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: { display: false },
-          y: { display: false }
-        },
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: false }
-        }
-      }
-    });
+    StocksService.createMiniChart(canvasId, trend);
   }
 
   generateRandomStockData(points, trend) {
-    const data = [100];
-    for (let i = 1; i < points; i++) {
-      const change = trend === 'up' ? Math.random() * 5 : -Math.random() * 5;
-      data.push(data[i-1] + change);
-    }
-    return data;
+    return StocksService.generateRandomStockData(points, trend);
   }
 }

@@ -10,35 +10,7 @@ class Notes {
   }
 
   render() {
-    return `
-      <div class="mb-8">
-        <h1 class="text-3xl font-semibold tracking-tight mb-2">Quick Notes</h1>
-        <p class="text-muted-foreground">Your quick notes and thoughts</p>
-      </div>
-
-      <div class="card p-6">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">Quick Notes</h2>
-          <button id="clear-all-notes" class="text-sm text-red-600 hover:text-red-800">Clear All</button>
-        </div>
-        <p class="text-sm text-muted-foreground mb-4">Jot down quick thoughts and ideas</p>
-        
-        <div class="mb-4">
-          <textarea 
-            id="note-input"
-            placeholder="What's on your mind?"
-            class="input w-full h-24 resize-none"
-          ></textarea>
-          <div class="flex justify-end mt-2">
-            <button id="add-note-btn" class="btn btn-primary text-sm">Add Note</button>
-          </div>
-        </div>
-        
-        <div id="notes-container" class="space-y-3 max-h-96 overflow-y-auto">
-          ${this.renderNotes()}
-        </div>
-      </div>
-    `;
+    return renderNotesPage(this.notes);
   }
 
   renderNotes() {
@@ -52,8 +24,7 @@ class Notes {
         </div>
       `;
     }
-
-    return this.notes.map(note => this.renderNoteItem(note)).join('');
+    return renderNotesList(this.notes);
   }
 
   renderNoteItem(note) {
@@ -150,7 +121,6 @@ class Notes {
   }
 
   saveNotes() {
-    Storage.set('quickNotes', this.notes);
-    Storage.set('nextNoteId', this.nextNoteId);
+    NotesService.saveNotes(this.notes, this.nextNoteId);
   }
 }

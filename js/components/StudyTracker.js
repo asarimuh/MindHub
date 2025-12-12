@@ -7,49 +7,7 @@ class StudyTracker {
   }
 
   render() {
-    return `
-      <div class="flex justify-between items-center mb-6">
-        <div>
-          <h1 class="text-3xl font-semibold tracking-tight">Study Tracker</h1>
-          <p class="text-muted-foreground mt-1">Track your learning progress with kanban boards</p>
-        </div>
-        <div class="flex space-x-2">
-          <div class="relative">
-            <input 
-              id="study-search"
-              type="text" 
-              placeholder="Search study cards..."
-              class="input w-64 pl-9"
-            >
-            <svg class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-          </div>
-          <button id="filter-study-btn" class="btn btn-secondary flex items-center space-x-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-            </svg>
-            <span>Filter</span>
-          </button>
-          <button id="add-study-card-btn" class="btn btn-primary flex items-center space-x-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            <span>Add Card</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Kanban Board -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        ${this.renderColumn('planned', 'Planned')}
-        ${this.renderColumn('in-progress', 'In Progress')}
-        ${this.renderColumn('reviewing', 'Reviewing')}
-        ${this.renderColumn('completed', 'Completed')}
-      </div>
-
-      ${this.renderModals()}
-    `;
+    return renderStudyTrackerPage(this.studyCards);
   }
 
   renderColumn(status, title) {

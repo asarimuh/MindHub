@@ -155,14 +155,17 @@ class Dashboard {
             <!-- Daily Reflection -->
             <div class="card p-6">
               <h2 class="text-xl font-semibold mb-4">Daily Reflection</h2>
-              <textarea id="reflection-input"
-                        class="input w-full h-32 resize-none mb-3"
-                        placeholder="What did you learn or realize today?"></textarea>
+              <input id="reflection-input"
+                     type="text"
+                     class="input w-full mb-3"
+                     placeholder="What did you learn or realize today?" />
               <button id="reflection-add-btn" 
                       class="btn btn-secondary w-full">
                 Save Reflection
               </button>
-              ${renderRecentReflection(this.reflections)}
+              <div id="reflection-list">
+                ${renderReflectionList(this.reflections)}
+              </div>
             </div>
 
             <!-- Photo Widget -->
@@ -184,19 +187,6 @@ class Dashboard {
                        alt="Special memory" />
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent Activity Section -->
-        <div class="mt-8">
-          <div class="card p-6">
-            <h2 class="text-xl font-semibold mb-4">Recent Activity</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              ${renderActivityItem('Goals Completed', '0', 'text-green-600')}
-              ${renderActivityItem('Tasks Done', this.getCompletedTasksCount(), 'text-blue-600')}
-              ${renderActivityItem('Learning Hours', '12h', 'text-purple-600')}
-              ${renderActivityItem('Reflection Streak', '3 days', 'text-orange-600')}
             </div>
           </div>
         </div>
@@ -300,6 +290,7 @@ class Dashboard {
         this.saveTasks();
         input.value = "";
         this.refreshTasksList();
+        this.showNotification('Subtask added successfully!');
       }
     }
   }
@@ -352,10 +343,6 @@ class Dashboard {
     this.saveCompletedTasks();
   }
 
-  getCompletedTasksCount() {
-    return this.completedTasks.length.toString();
-  }
-
   /* ============== GOALS MANAGEMENT ============== */
 
   refreshGoalsList() {
@@ -377,7 +364,10 @@ class Dashboard {
   /* ============== REFLECTION MANAGEMENT ============== */
 
   refreshReflectionDisplay() {
-    // Placeholder for future reflection display refresh
+    const list = document.getElementById('reflection-list');
+    if (list) {
+      list.innerHTML = renderReflectionList(this.reflections);
+    }
   }
 
   /* ============== PHOTO WIDGET ============== */
@@ -613,6 +603,7 @@ class Dashboard {
       Storage.set("dashboard_goals", this.goals);
       input.value = "";
       this.refreshGoalsList();
+      this.showNotification('Goal added saved successfully!');
     };
 
     addBtn?.addEventListener('click', addGoal);
@@ -645,6 +636,7 @@ class Dashboard {
       this.saveTasks();
       input.value = "";
       this.refreshTasksList();
+      this.showNotification('Tasked added successfully!');
     };
 
     addBtn?.addEventListener('click', addTask);
@@ -704,27 +696,34 @@ class Dashboard {
 
   initTaskInteractions() {
     document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('task-check')) {
-        this.toggleTaskCompletion(e.target.dataset.taskId);
+      const el = e.target;
+
+      const taskCheck = el.closest('.task-check');
+      if (taskCheck) {
+        this.toggleTaskCompletion(taskCheck.dataset.taskId);
       }
 
-      if (e.target.classList.contains('subtask-check')) {
+      const subtaskCheck = el.closest('.subtask-check');
+      if (subtaskCheck) {
         this.toggleSubtaskCompletion(
-          e.target.dataset.taskId,
-          parseInt(e.target.dataset.subtaskIndex)
+          subtaskCheck.dataset.taskId,
+          parseInt(subtaskCheck.dataset.subtaskIndex)
         );
       }
 
-      if (e.target.classList.contains('delete-task')) {
-        this.deleteTask(e.target.dataset.taskId);
+      const deleteTaskBtn = el.closest('.delete-task');
+      if (deleteTaskBtn) {
+        this.deleteTask(deleteTaskBtn.dataset.taskId);
       }
 
-      if (e.target.classList.contains('add-subtask-btn')) {
-        this.addSubtask(e.target.dataset.taskId);
+      const addSubtaskBtn = el.closest('.add-subtask-btn');
+      if (addSubtaskBtn) {
+        this.addSubtask(addSubtaskBtn.dataset.taskId);
       }
 
-      if (e.target.classList.contains('edit-task')) {
-        this.editTask(e.target.dataset.taskId);
+      const editTaskBtn = el.closest('.edit-task');
+      if (editTaskBtn) {
+        this.editTask(editTaskBtn.dataset.taskId);
       }
     });
 
@@ -751,6 +750,7 @@ class Dashboard {
       Storage.set("dashboard_learning", this.learning);
       input.value = "";
       this.refreshLearningList();
+      this.showNotification('Learning subject added successfully!');
     };
 
     addBtn?.addEventListener('click', addLearning);
@@ -778,6 +778,14 @@ class Dashboard {
       this.showNotification('Reflection saved successfully!');
       this.refreshReflectionDisplay();
     });
+
+    // Allow pressing Enter to submit the reflection
+    input?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        btn?.click();
+      }
+    });
   }
 
   bindGlobalDeleteHandlers() {
@@ -802,6 +810,11 @@ class Dashboard {
             this.learning.splice(index, 1);
             Storage.set("dashboard_learning", this.learning);
             this.refreshLearningList();
+            break;
+          case 'reflections':
+            this.reflections.splice(index, 1);
+            Storage.set("dashboard_reflections", this.reflections);
+            this.refreshReflectionDisplay();
             break;
         }
       }

@@ -28,50 +28,15 @@ class News {
   }
 
   render() {
-    return `
-      <div class="mb-8">
-        <h1 class="text-3xl font-semibold tracking-tight mb-2">News</h1>
-        <p class="text-muted-foreground">Latest news and updates</p>
-      </div>
-
-      <div class="card p-6">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">Latest News</h2>
-          <div class="flex space-x-1" id="news-categories">
-            ${this.renderCategoryButtons()}
-          </div>
-        </div>
-        
-        <div id="news-container" class="space-y-4 max-h-96 overflow-y-auto">
-          ${this.renderNewsItems(this.currentCategory)}
-        </div>
-      </div>
-    `;
+    return renderNewsPage(this.currentCategory, this.newsData);
   }
 
   renderCategoryButtons() {
-    const categories = [
-      { id: 'tech', name: 'Tech', active: this.currentCategory === 'tech' },
-      { id: 'finance', name: 'Finance', active: this.currentCategory === 'finance' },
-      { id: 'indonesia', name: 'Indonesia', active: this.currentCategory === 'indonesia' }
-    ];
-
-    return categories.map(category => `
-      <button class="news-category-btn text-xs px-2 py-1 rounded ${category.active ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100'}" 
-              data-category="${category.id}">
-        ${category.name}
-      </button>
-    `).join('');
+    return renderNewsCategoryButtons(this.currentCategory);
   }
 
   renderNewsItems(category) {
-    const news = this.newsData[category] || [];
-    return news.map(item => `
-      <div class="news-item">
-        <h3 class="font-medium text-sm">${item.title}</h3>
-        <p class="text-xs text-muted-foreground mt-1">${item.source} • ${item.time}</p>
-      </div>
-    `).join('');
+    return renderNewsItems(category, this.newsData);
   }
 
   init() {

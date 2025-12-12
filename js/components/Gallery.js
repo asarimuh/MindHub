@@ -38,33 +38,7 @@ class Gallery {
   }
 
   render() {
-    return `
-      <div class="mb-8">
-        <h1 class="text-3xl font-semibold tracking-tight mb-2">Gallery</h1>
-        <p class="text-muted-foreground">Your photos and images</p>
-      </div>
-
-      <div class="card p-6">
-        <div class="flex justify-between items-center mb-6">
-          <div>
-            <h2 class="text-xl font-semibold">Memory Board</h2>
-            <p class="text-muted-foreground mt-1">Your important moments</p>
-          </div>
-          <button id="add-photos-btn" class="btn btn-primary flex items-center space-x-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            <span>Add Photos</span>
-          </button>
-        </div>
-        
-        <div class="image-grid">
-          ${this.images.map(image => this.renderImageItem(image)).join('')}
-        </div>
-      </div>
-
-      ${this.renderUploadModal()}
-    `;
+    return renderGallery(this.images);
   }
 
   renderImageItem(image) {
@@ -114,12 +88,12 @@ class Gallery {
   setupEventListeners() {
     // Add photos button
     document.getElementById('add-photos-btn').addEventListener('click', () => {
-      document.getElementById('upload-photos-modal').classList.remove('hidden');
+      GalleryService.openUploadModal();
     });
 
     // Close upload modal
-    document.getElementById('close-upload-modal').addEventListener('click', this.closeUploadModal.bind(this));
-    document.getElementById('cancel-upload').addEventListener('click', this.closeUploadModal.bind(this));
+    document.getElementById('close-upload-modal').addEventListener('click', () => GalleryService.closeUploadModal());
+    document.getElementById('cancel-upload').addEventListener('click', () => GalleryService.closeUploadModal());
 
     // Browse files button
     document.getElementById('browse-files-btn').addEventListener('click', () => {
@@ -127,19 +101,14 @@ class Gallery {
     });
 
     // File input change
-    document.getElementById('file-input').addEventListener('change', this.handleFileSelect.bind(this));
+    document.getElementById('file-input').addEventListener('change', (e) => GalleryService.handleFileSelect(e));
   }
 
   closeUploadModal() {
-    document.getElementById('upload-photos-modal').classList.add('hidden');
-    document.getElementById('file-input').value = '';
-    document.getElementById('confirm-upload').disabled = true;
+    GalleryService.closeUploadModal();
   }
 
   handleFileSelect(event) {
-    const files = event.target.files;
-    if (files.length > 0) {
-      document.getElementById('confirm-upload').disabled = false;
-    }
+    GalleryService.handleFileSelect(event);
   }
 }
