@@ -94,25 +94,113 @@ class Dashboard {
 
               <!-- Add Task Form -->
               <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                <input id="task-input" class="input flex-1" placeholder="What needs to be done?" />
-                <select id="task-priority" class="input w-32">
-                  <option value="low">Low</option>
-                  <option value="medium" selected>Medium</option>
-                  <option value="high">High</option>
-                </select>
-                <select id="task-deadline" class="input w-32">
-                  <option value="today">Today</option>
-                  <option value="weekly">This Week</option>
-                  <option value="monthly">This Month</option>
-                  <option value="todo">No Deadline</option>
-                </select>
-                <select id="task-category" class="input w-40">
-                  <option value="">Category (none)</option>
-                  ${this.customFilters.map(f => `<option value="${f.id}">${f.name}</option>`).join('')}
-                </select>
-                <button id="task-add-btn" class="btn btn-secondary whitespace-nowrap">Add Task</button>
+                
+                <input
+                  id="task-input"
+                  class="input flex-1"
+                  placeholder="What needs to be done?"
+                />
+                
+                <!-- PRIORITY -->
+                <div class="relative w-32">
+                  <button
+                    id="task-priority-toggle"
+                    class="input w-full flex justify-between items-center"
+                    data-value="medium"
+                    type="button"
+                  >
+                    <span id="task-priority-label">Medium</span>
+                    <span class="text-xs text-gray-500">▾</span>
+                  </button>
+                
+                  <div
+                    id="task-priority-popover"
+                    class="hidden absolute z-50 mt-1 w-full bg-white border rounded-md shadow-lg"
+                  >
+                    <button class="task-priority-option block w-full px-3 py-2 text-left text-sm hover:bg-gray-100" data-value="low">
+                      Low
+                    </button>
+                    <button class="task-priority-option block w-full px-3 py-2 text-left text-sm hover:bg-gray-100" data-value="medium">
+                      Medium
+                    </button>
+                    <button class="task-priority-option block w-full px-3 py-2 text-left text-sm hover:bg-gray-100" data-value="high">
+                      High
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- DEADLINE -->
+                <div class="relative w-32">
+                  <button
+                    id="task-deadline-toggle"
+                    class="input w-full flex justify-between items-center"
+                    data-value="today"
+                    type="button"
+                  >
+                    <span id="task-deadline-label">Today</span>
+                    <span class="text-xs text-gray-500">▾</span>
+                  </button>
+                
+                  <div
+                    id="task-deadline-popover"
+                    class="hidden absolute z-50 mt-1 w-full bg-white border rounded-md shadow-lg"
+                  >
+                    <button class="task-deadline-option block w-full px-3 py-2 text-left text-sm hover:bg-gray-100" data-value="today">
+                      Today
+                    </button>
+                    <button class="task-deadline-option block w-full px-3 py-2 text-left text-sm hover:bg-gray-100" data-value="weekly">
+                      This Week
+                    </button>
+                    <button class="task-deadline-option block w-full px-3 py-2 text-left text-sm hover:bg-gray-100" data-value="monthly">
+                      This Month
+                    </button>
+                    <button class="task-deadline-option block w-full px-3 py-2 text-left text-sm hover:bg-gray-100" data-value="todo">
+                      No Deadline
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- CATEGORY -->
+                <div class="relative w-40">
+                  <button
+                    id="task-category-toggle"
+                    class="input w-full flex justify-between items-center"
+                    data-value=""
+                    type="button"
+                  >
+                    <span id="task-category-label">Category (none)</span>
+                    <span class="text-xs text-gray-500">▾</span>
+                  </button>
+                
+                  <div
+                    id="task-category-popover"
+                    class="hidden absolute z-50 mt-1 w-full bg-white border rounded-md shadow-lg max-h-48 overflow-y-auto"
+                  >
+                    <button
+                      class="task-category-option block w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                      data-value=""
+                    >
+                      Category (none)
+                    </button>
+                
+                    ${this.customFilters.map(f => `
+                      <button
+                        class="task-category-option block w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                        data-value="${f.id}"
+                      >
+                        ${f.name}
+                      </button>
+                    `).join('')}
+                  </div>
+                </div>
+                    
+                <button
+                  id="task-add-btn"
+                  class="btn btn-secondary whitespace-nowrap"
+                >
+                  Add Task
+                </button>
               </div>
-
               <!-- Task List -->
               <div id="task-list" class="space-y-2 max-h-80 overflow-y-auto">
                 ${this.renderTaskList()}
@@ -779,24 +867,26 @@ class Dashboard {
   initTasks() {
     const input = document.getElementById("task-input");
     const addBtn = document.getElementById("task-add-btn");
-    const prioritySelect = document.getElementById("task-priority");
-    const deadlineSelect = document.getElementById("task-deadline");
-    const categorySelect = document.getElementById("task-category");
 
     const addTask = () => {
       const title = input.value.trim();
       if (!title) return;
 
+      const priority = document.getElementById("task-priority-toggle")?.dataset.value || "medium";
+      const deadline = document.getElementById("task-deadline-toggle")?.dataset.value || "today";
+      const category = document.getElementById("task-category-toggle")?.dataset.value || "";
+
       const newTask = {
         id: Date.now().toString() + Math.random(),
-        title: title,
-        priority: prioritySelect.value,
-        deadline: deadlineSelect.value,
-        category: categorySelect?.value || '',
+        title,
+        priority,
+        deadline,
+        category,
         completed: false,
         subtasks: [],
         createdAt: new Date().toISOString()
       };
+
 
       this.tasks.push(newTask);
       this.saveTasks();
@@ -816,6 +906,9 @@ class Dashboard {
 
     // ensure category select is populated with custom filters
     this.refreshCategorySelect();
+
+    this.initTaskPopovers();
+
   }
 
   initTaskFilterTabs() {
@@ -828,6 +921,59 @@ class Dashboard {
       });
     });
   }
+
+  initTaskPopovers() {
+    const setup = (toggleId, popoverId, optionClass, labelId) => {
+      const toggle = document.getElementById(toggleId);
+      const popover = document.getElementById(popoverId);
+      const label = document.getElementById(labelId);
+
+      if (!toggle || !popover) return;
+
+      toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        popover.classList.toggle("hidden");
+      });
+
+      popover.addEventListener("click", (e) => {
+        const option = e.target.closest(`.${optionClass}`);
+        if (!option) return;
+
+        const value = option.dataset.value;
+        const text = option.textContent.trim();
+
+        toggle.dataset.value = value;
+        label.textContent = text;
+        popover.classList.add("hidden");
+      });
+
+      document.addEventListener("click", () => {
+        popover.classList.add("hidden");
+      });
+    };
+
+    setup(
+      "task-priority-toggle",
+      "task-priority-popover",
+      "task-priority-option",
+      "task-priority-label"
+    );
+
+    setup(
+      "task-deadline-toggle",
+      "task-deadline-popover",
+      "task-deadline-option",
+      "task-deadline-label"
+    );
+
+    setup(
+      "task-category-toggle",
+      "task-category-popover",
+      "task-category-option",
+      "task-category-label"
+    );
+  }
+
 
   updateActiveTabUI() {
     document.querySelectorAll('.filter-tab').forEach(tab => {
