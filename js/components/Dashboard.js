@@ -275,6 +275,19 @@ class Dashboard {
     }
   }
 
+  removeSubtask(taskId, subtaskIndex) {
+    const task = this.tasks.find(t => t.id === taskId);
+    if (!task || !task.subtasks) return;
+
+    // ensure valid index
+    if (subtaskIndex < 0 || subtaskIndex >= task.subtasks.length) return;
+
+    task.subtasks.splice(subtaskIndex, 1);
+    this.saveTasks();
+    this.refreshTasksList();
+    this.showNotification('Subtask removed');
+  }
+
   addSubtask(taskId) {
     const task = this.tasks.find(t => t.id === taskId);
     const input = document.querySelector(`.subtask-input[data-task-id="${taskId}"]`);
@@ -299,6 +312,8 @@ class Dashboard {
     this.tasks = this.tasks.filter(t => t.id !== taskId);
     this.saveTasks();
     this.refreshTasksList();
+    this.showNotification('Tasked Deleted successfully!');
+
   }
 
   editTask(taskId) {
@@ -309,6 +324,7 @@ class Dashboard {
         task.title = newTitle.trim();
         this.saveTasks();
         this.refreshTasksList();
+        this.showNotification('Tasked Edited successfully!');
       }
     }
   }
@@ -548,19 +564,54 @@ class Dashboard {
   }
 
   showNotification(message) {
-    const existingNotification = document.querySelector('.dashboard-notification');
-    if (existingNotification) {
-      existingNotification.remove();
+    // Create or reuse toast container
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.className = 'toast-container';
+      document.body.appendChild(container);
     }
 
-    const notification = document.createElement('div');
-    notification.className = 'dashboard-notification fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
-    notification.textContent = message;
-    document.body.appendChild(notification);
+    // Create toast
+    const toast = document.createElement('div');
+    toast.className = 'toast';
 
-    setTimeout(() => {
-      notification.remove();
-    }, 3000);
+    // Message
+    const msg = document.createElement('div');
+    msg.className = 'toast-message';
+    msg.textContent = message;
+
+    // Close button (X)
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'toast-close';
+    closeBtn.setAttribute('aria-label', 'Close notification');
+    closeBtn.innerHTML = `
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    `;
+
+    toast.appendChild(msg);
+    toast.appendChild(closeBtn);
+    container.appendChild(toast);
+
+    // Auto-dismiss with exit animation
+    let removed = false;
+    const removeToast = () => {
+      if (removed) return;
+      removed = true;
+      toast.classList.add('toast-leave');
+      toast.addEventListener('animationend', () => {
+        toast.remove();
+      });
+    };
+
+    const timeoutId = setTimeout(removeToast, 3000);
+
+    closeBtn.addEventListener('click', () => {
+      clearTimeout(timeoutId);
+      removeToast();
+    });
   }
 
   /* ============== INITIALIZATION & EVENT BINDING ============== */
@@ -724,6 +775,14 @@ class Dashboard {
       const editTaskBtn = el.closest('.edit-task');
       if (editTaskBtn) {
         this.editTask(editTaskBtn.dataset.taskId);
+      }
+
+      const deleteSubtaskBtn = el.closest('.delete-subtask');
+      if (deleteSubtaskBtn) {
+        this.removeSubtask(
+          deleteSubtaskBtn.dataset.taskId,
+          parseInt(deleteSubtaskBtn.dataset.subtaskIndex)
+        );
       }
     });
 

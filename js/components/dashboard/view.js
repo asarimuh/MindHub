@@ -91,17 +91,29 @@ function renderTaskItem(task, index) {
           ${task.subtasks && task.subtasks.length > 0 ? `
             <div class="subtasks ml-4 space-y-1 mt-2">
               ${task.subtasks.map((subtask, subIndex) => `
-                <div class="flex items-center gap-2 text-xs">
-                  <input
-                    type="checkbox"
-                    ${subtask.completed ? 'checked' : ''}
+                <div class="flex items-center justify-between gap-2 text-xs">
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      ${subtask.completed ? 'checked' : ''}
+                      data-task-id="${task.id}"
+                      data-subtask-index="${subIndex}"
+                      class="subtask-check w-3 h-3 text-gray-600 rounded"
+                    />
+                    <span class="${subtask.completed ? 'line-through text-gray-400' : 'text-gray-600'}">
+                      ${subtask.title}
+                    </span>
+                  </div>
+                  <button
+                    class="delete-subtask text-gray-400 hover:text-red-500 transition-colors p-1"
                     data-task-id="${task.id}"
                     data-subtask-index="${subIndex}"
-                    class="subtask-check w-3 h-3 text-gray-600 rounded"
-                  />
-                  <span class="${subtask.completed ? 'line-through text-gray-400' : 'text-gray-600'}">
-                    ${subtask.title}
-                  </span>
+                    title="Remove subtask"
+                  >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </button>
                 </div>
               `).join('')}
             </div>
