@@ -254,6 +254,79 @@ main {
   display: none;
 }
 
+/* Task filter header styling */
+#task-filter-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #374151;
+  padding: 0.45rem 0.75rem;
+  border-radius: 9999px; /* pill */
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 160ms ease;
+}
+
+.filter-tab:hover {
+  background: #ffffff;
+  border-color: #eef2f6;
+  color: #0f172a;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+}
+
+.filter-tab.bg-white {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #e6e6ea !important;
+  box-shadow: 0 8px 24px rgba(2,6,23,0.08);
+}
+
+#other-filter-select {
+  border: 1px solid #e6e6ea;
+  background: #fff;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: #0f172a;
+}
+
+#custom-filters-controls {
+  margin-top: 0.5rem;
+  padding: 0.6rem;
+  background: #ffffff;
+  border: 1px solid #eef2f6;
+  border-radius: 0.5rem;
+  width: 16rem;
+}
+
+#new-custom-filter-input {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #e6e6ea;
+  border-radius: 0.375rem;
+}
+
+#add-custom-filter-btn {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+/* Make the custom filters list items compact */
+#custom-filters-list .flex.items-center {
+  gap: 0.5rem;
+  padding: 0.25rem 0.35rem;
+}
+
+@media (max-width: 768px) {
+  #custom-filters-controls { width: 100%; }
+  .filter-tab { padding: 0.35rem 0.5rem; font-size: 0.8rem; }
+}
+
 /* Toast / Notification (monochrome, animated, shadcn-inspired) */
 .toast-container {
   position: fixed;

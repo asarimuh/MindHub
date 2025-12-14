@@ -43,6 +43,8 @@ class Dashboard {
 
     // Services
     this.photoWidget = new PhotoWidgetService(this.photoList);
+    // Custom filters (other categories)
+    this.customFilters = Storage.get('dashboard_custom_filters') || [];
   }
 
   render() {
@@ -86,8 +88,8 @@ class Dashboard {
               </div>
 
               <!-- Filter Tabs -->
-              <div class="flex flex-wrap gap-1 mb-4 p-1 bg-gray-100 rounded-lg">
-                ${renderTaskFilterTabs(this.currentTaskFilter)}
+              <div id="task-filter-tabs" class="flex flex-wrap gap-1 mb-4 p-1 bg-gray-100 rounded-lg">
+                ${renderTaskFilterTabs(this.currentTaskFilter, this.customFilters)}
               </div>
 
               <!-- Add Task Form -->
@@ -103,6 +105,10 @@ class Dashboard {
                   <option value="weekly">This Week</option>
                   <option value="monthly">This Month</option>
                   <option value="todo">No Deadline</option>
+                </select>
+                <select id="task-category" class="input w-40">
+                  <option value="">Category (none)</option>
+                  ${this.customFilters.map(f => `<option value="${f.id}">${f.name}</option>`).join('')}
                 </select>
                 <button id="task-add-btn" class="btn btn-secondary whitespace-nowrap">Add Task</button>
               </div>
@@ -232,18 +238,24 @@ class Dashboard {
   }
 
   getTasksByFilter(filter) {
-    switch (filter) {
-      case 'today':
-        return this.tasks.filter(task => task.deadline === 'today' && !task.completed);
-      case 'weekly':
-        return this.tasks.filter(task => task.deadline === 'weekly' && !task.completed);
-      case 'monthly':
-        return this.tasks.filter(task => task.deadline === 'monthly' && !task.completed);
-      case 'todo':
-        return this.tasks.filter(task => task.deadline === 'todo' && !task.completed);
-      default:
-        return this.tasks.filter(task => !task.completed);
+    // Support built-in filters and custom filters encoded as 'custom:<id>'
+    if (!filter || filter === 'all') {
+      return this.tasks.filter(task => !task.completed);
     }
+
+    if (filter === 'today') return this.tasks.filter(task => task.deadline === 'today' && !task.completed);
+    if (filter === 'weekly') return this.tasks.filter(task => task.deadline === 'weekly' && !task.completed);
+    if (filter === 'monthly') return this.tasks.filter(task => task.deadline === 'monthly' && !task.completed);
+    if (filter === 'todo') return this.tasks.filter(task => task.deadline === 'todo' && !task.completed);
+
+    const customMatch = /^custom:(.+)$/;
+    const m = String(filter).match(customMatch);
+    if (m) {
+      const id = m[1];
+      return this.tasks.filter(task => (task.category === id) && !task.completed);
+    }
+
+    return this.tasks.filter(task => !task.completed);
   }
 
   toggleTaskCompletion(taskId) {
@@ -308,12 +320,111 @@ class Dashboard {
     }
   }
 
+  /* ============== CUSTOM FILTERS ============== */
+
+  addCustomFilter(name) {
+    if (!name) return;
+    // prevent duplicates
+    if (this.customFilters.find(f => f.name.toLowerCase() === name.toLowerCase())) {
+      this.showNotification('Category already exists');
+      return;
+    }
+
+    const id = Date.now().toString();
+    this.customFilters.push({ id, name });
+    Storage.set('dashboard_custom_filters', this.customFilters);
+    this.refreshFilterTabs();
+    this.refreshCategorySelect();
+    this.showNotification('Category added');
+  }
+
+  removeCustomFilter(id) {
+    const idx = this.customFilters.findIndex(f => f.id === id);
+    if (idx === -1) return;
+    this.customFilters.splice(idx, 1);
+    Storage.set('dashboard_custom_filters', this.customFilters);
+    // Clear category from tasks that used this category
+    this.tasks.forEach(t => { if (t.category === id) t.category = ''; });
+    this.saveTasks();
+    this.refreshFilterTabs();
+    this.refreshCategorySelect();
+    this.refreshTasksList();
+    this.showNotification('Category removed');
+  }
+
+  refreshFilterTabs() {
+    const container = document.getElementById('task-filter-tabs');
+    if (!container) return;
+    container.innerHTML = renderTaskFilterTabs(this.currentTaskFilter, this.customFilters);
+    // re-bind tab handlers
+    this.initTaskFilterTabs();
+
+    // Bind popover toggle for custom filters (only bind once)
+    const toggle = document.getElementById('custom-filters-toggle');
+    const popover = document.getElementById('custom-filters-popover');
+    if (toggle && popover && !toggle.dataset.bound) {
+      toggle.dataset.bound = '1';
+      toggle.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        popover.classList.toggle('hidden');
+      });
+
+      // add a single document-level click handler to close popover when clicking outside
+      if (!document.body.dataset.customPopoverHandler) {
+        document.addEventListener('click', (e) => {
+          if (!popover.contains(e.target) && !toggle.contains(e.target)) {
+            popover.classList.add('hidden');
+          }
+        });
+        document.body.dataset.customPopoverHandler = '1';
+      }
+    }
+
+    // bind other dropdown change (select is inside the popover)
+    const otherSelect = document.getElementById('other-filter-select');
+    otherSelect?.addEventListener('change', (e) => {
+      const val = e.target.value;
+      if (val) {
+        this.currentTaskFilter = val;
+        Storage.set('dashboard_task_filter', this.currentTaskFilter);
+        this.updateActiveTabUI();
+        this.refreshTasksList();
+      }
+    });
+
+    // bind add / delete custom filters
+    const addBtn = document.getElementById('add-custom-filter-btn');
+    addBtn?.addEventListener('click', () => {
+      const input = document.getElementById('new-custom-filter-input');
+      if (input) {
+        this.addCustomFilter(input.value.trim());
+        input.value = '';
+      }
+    });
+
+    container.querySelectorAll('.delete-custom-filter').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = btn.dataset.id;
+        if (!id) return;
+        this.removeCustomFilter(id);
+      });
+    });
+  }
+
+  refreshCategorySelect() {
+    const sel = document.getElementById('task-category');
+    if (!sel) return;
+    const html = ['<option value="">Category (none)</option>']
+      .concat(this.customFilters.map(f => `<option value="${f.id}">${f.name}</option>`))
+      .join('');
+    sel.innerHTML = html;
+  }
+
   deleteTask(taskId) {
     this.tasks = this.tasks.filter(t => t.id !== taskId);
     this.saveTasks();
     this.refreshTasksList();
-    this.showNotification('Tasked Deleted successfully!');
-
+    this.showNotification('Task Deleted successfully!');
   }
 
   editTask(taskId) {
@@ -624,6 +735,8 @@ class Dashboard {
     this.initReflection();
     this.bindGlobalDeleteHandlers();
     this.fetchGitHubActivity();
+    // Bind custom filter controls after initial render
+    this.refreshFilterTabs();
   }
 
   initPhotoWidget() {
@@ -668,6 +781,7 @@ class Dashboard {
     const addBtn = document.getElementById("task-add-btn");
     const prioritySelect = document.getElementById("task-priority");
     const deadlineSelect = document.getElementById("task-deadline");
+    const categorySelect = document.getElementById("task-category");
 
     const addTask = () => {
       const title = input.value.trim();
@@ -678,6 +792,7 @@ class Dashboard {
         title: title,
         priority: prioritySelect.value,
         deadline: deadlineSelect.value,
+        category: categorySelect?.value || '',
         completed: false,
         subtasks: [],
         createdAt: new Date().toISOString()
@@ -698,6 +813,9 @@ class Dashboard {
     this.initTaskFilterTabs();
     this.initTaskDragAndDrop();
     this.initTaskInteractions();
+
+    // ensure category select is populated with custom filters
+    this.refreshCategorySelect();
   }
 
   initTaskFilterTabs() {

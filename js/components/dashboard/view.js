@@ -28,7 +28,7 @@ function renderActivityItem(title, value, colorClass) {
 }
 
 // ========== TASK RENDERING ==========
-function renderTaskFilterTabs(currentFilter) {
+function renderTaskFilterTabs(currentFilter, customFilters = []) {
   const filters = [
     { id: 'all', label: 'All', icon: '📋' },
     { id: 'today', label: 'Today', icon: '📅' },
@@ -37,7 +37,7 @@ function renderTaskFilterTabs(currentFilter) {
     { id: 'todo', label: 'Misc', icon: '📝' },
   ];
 
-  return filters.map(filter => `
+  const builtIn = filters.map(filter => `
     <button
       class="filter-tab px-3 py-2 rounded-md text-sm font-medium transition-colors ${currentFilter === filter.id
       ? 'bg-white text-blue-600 shadow-sm'
@@ -49,6 +49,47 @@ function renderTaskFilterTabs(currentFilter) {
       ${filter.label}
     </button>
   `).join('');
+
+  // Other dropdown (custom filters) rendered inside a popover toggle
+  const otherOptions = customFilters.map(f => `
+    <option value="custom:${f.id}">${f.name}</option>
+  `).join('');
+
+  const customList = customFilters.map(f => `
+    <div class="flex items-center justify-between text-xs p-1 rounded bg-gray-50">
+      <span class="truncate">${f.name}</span>
+      <button class="delete-custom-filter text-gray-400 hover:text-red-500 p-1" data-id="${f.id}" title="Delete">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+  `).join('');
+
+  return `
+    ${builtIn}
+    <div class="relative inline-block">
+      <button id="custom-filters-toggle" class="filter-tab px-3 py-2 rounded-md text-sm font-medium ml-2 bg-gray-50 hover:bg-gray-100">
+        Other ▾
+      </button>
+
+      <div id="custom-filters-popover" class="hidden absolute right-0 mt-2 z-50 w-64 bg-white border rounded-md shadow-lg p-3">
+        <div class="mb-2">
+          <select id="other-filter-select" class="input text-sm w-full">
+            <option value="">Select category</option>
+            ${otherOptions}
+          </select>
+        </div>
+        <div class="flex gap-2 mb-2">
+          <input id="new-custom-filter-input" class="input flex-1 text-sm" placeholder="New category" />
+          <button id="add-custom-filter-btn" class="btn btn-secondary text-sm">Add</button>
+        </div>
+        <div id="custom-filters-list" class="space-y-1 max-h-40 overflow-y-auto">
+          ${customList}
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function renderTaskItem(task, index) {
