@@ -375,5 +375,40 @@ function renderStudyModals() {
         </div>
       </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+<div id="delete-confirm-modal" class="modal-overlay hidden">
+  <div class="modal-content max-w-sm">
+    <div class="modal-header">
+      <h3 class="text-lg font-semibold text-red-600">Delete Study Card</h3>
+      <button id="close-delete-modal" class="modal-close-btn">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <p class="text-sm text-muted-foreground">
+        Are you sure you want to delete this study card?
+        <br />
+        <span class="text-red-500 font-medium">
+          This action cannot be undone.
+        </span>
+      </p>
+    </div>
+
+    <div class="modal-footer flex justify-end gap-2">
+      <button id="cancel-delete-card" class="btn btn-secondary">
+        Cancel
+      </button>
+      <button id="confirm-delete-card" class="btn btn-danger">
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+
   `;
 } 

@@ -45,65 +45,90 @@ class StudyTracker {
   /* =============================
    * 3. EVENT LISTENERS
    * ============================= */
-  setupEventListeners() {
-    document.addEventListener('click', e => {
-      /* ---- STUDY CARD ---- */
-      const cardEl = e.target.closest('.study-card');
+setupEventListeners() {
+  document.addEventListener('click', e => {
 
-      if (cardEl) {
-        const cardId = Number(cardEl.dataset.cardId);
-        const card = this.studyCards.find(c => c.id === cardId);
-        if (!card) return;
+    /* ===============================
+       STUDY CARD
+    =============================== */
+    const cardEl = e.target.closest('.study-card');
 
-        if (e.target.classList.contains('open-doc-btn')) {
-          window.open(card.docUrl, '_blank');
-          this.markStudied(cardId);
-          return;
-        }
+    if (cardEl) {
+      const cardId = Number(cardEl.dataset.cardId);
+      const card = this.studyCards.find(c => c.id === cardId);
+      if (!card) return;
 
-        if (!e.target.closest('button')) {
-          this.openDetailModal(cardId);
-          return;
-        }
-      }
-
-      /* ---- DETAIL MODAL ---- */
-      if (
-        e.target.closest('#close-detail-modal') ||
-        e.target.closest('#cancel-detail-modal')
-      ) {
-        this.closeDetailModal();
+      if (e.target.classList.contains('open-doc-btn')) {
+        window.open(card.docUrl, '_blank');
+        this.markStudied(cardId);
         return;
       }
 
-      if (e.target.id === 'save-detail-modal') {
-        this.saveDetailModal();
+      if (!e.target.closest('button')) {
+        this.openDetailModal(cardId);
         return;
       }
+    }
 
-      /* ---- ADD MODAL ---- */
-      if (
-        e.target.closest('#close-add-modal') ||
-        e.target.closest('#cancel-add-study')
-      ) {
-        this.closeAddModal();
-        return;
-      }
+    /* ===============================
+       DETAIL MODAL
+    =============================== */
+    if (
+      e.target.closest('#close-detail-modal') ||
+      e.target.closest('#cancel-detail-modal')
+    ) {
+      this.closeDetailModal();
+      return;
+    }
 
-      if (e.target.id === 'save-study-card') {
-        this.handleAddStudyCard();
-      }
+    if (e.target.id === 'save-detail-modal') {
+      this.saveDetailModal();
+      return;
+    }
 
-      if (e.target.closest('#delete-study-card')) {
-        this.deleteCurrentCard();
-        return;
-      }
-    });
+    if (e.target.closest('#delete-study-card')) {
+      this.openDeleteConfirmModal(); // 🔴 NOT confirmDeleteCard
+      return;
+    }
 
-    document
-      .getElementById('add-study-card-btn')
-      ?.addEventListener('click', () => this.openAddModal());
-  }
+    /* ===============================
+       ADD MODAL
+    =============================== */
+    if (
+      e.target.closest('#close-add-modal') ||
+      e.target.closest('#cancel-add-study')
+    ) {
+      this.closeAddModal();
+      return;
+    }
+
+    if (e.target.id === 'save-study-card') {
+      this.handleAddStudyCard();
+      return;
+    }
+
+    /* ===============================
+       DELETE CONFIRM MODAL
+    =============================== */
+    if (
+      e.target.closest('#close-delete-modal') ||
+      e.target.closest('#cancel-delete-card')
+    ) {
+      this.closeDeleteConfirmModal();
+      return;
+    }
+
+    if (e.target.id === 'confirm-delete-card') {
+      this.confirmDeleteCard();
+      return;
+    }
+  });
+
+  document
+    .getElementById('add-study-card-btn')
+    ?.addEventListener('click', () => this.openAddModal());
+}
+
 
   /* =============================
    * 4. MODALS
@@ -170,28 +195,22 @@ class StudyTracker {
     this.init();
   }
 
-  deleteCurrentCard() {
+  confirmDeleteCard() {
   if (this.currentEditingCardId == null) return;
-
-  const confirmed = confirm(
-    'Are you sure you want to delete this study card? This action cannot be undone.'
-  );
-
-  if (!confirmed) return;
 
   this.studyCards = this.studyCards.filter(
     card => card.id !== this.currentEditingCardId
   );
 
   this.saveStudyCards();
+
+  this.closeDeleteConfirmModal();
   this.closeDetailModal();
 
-  // Re-render board
   const pageContent = document.getElementById('page-content');
   pageContent.innerHTML = this.render();
   this.init();
 }
-
 
   /* =============================
    * 5. CARD ACTIONS
@@ -276,4 +295,17 @@ class StudyTracker {
     Storage.set('studyCards', this.studyCards);
     Storage.set('nextStudyCardId', this.nextId);
   }
+
+  openDeleteConfirmModal() {
+    document
+      .getElementById('delete-confirm-modal')
+      .classList.remove('hidden');
+  }
+
+  closeDeleteConfirmModal() {
+    document
+      .getElementById('delete-confirm-modal')
+      .classList.add('hidden');
+  }
+
 }
