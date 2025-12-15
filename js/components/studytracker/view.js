@@ -2,29 +2,12 @@ function renderStudyTrackerPage(studyCards) {
   return `
     <div class="kanban-board-container">
       <!-- Header -->
-      <div class="study-tracker-header">
-        
-        
+      <div class="flex justify-between">
+        <div class="mb-8">
+          <h1 class="text-3xl font-semibold tracking-tight mb-2">Study Tracker</h1>
+          <p class="text-muted-foreground">Plan → Learn → Review → Done</p>
+        </div>
         <div class="header-controls">
-          <div class="search-container">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-            <input 
-              id="study-search"
-              type="text" 
-              placeholder="Search study cards..."
-              class="input"
-            >
-          </div>
-          
-          <button id="filter-study-btn" class="btn btn-secondary">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
-            </svg>
-            Filter
-          </button>
-          
           <button id="add-study-card-btn" class="btn btn-primary">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -160,23 +143,6 @@ function renderStudyCard(card) {
         ${card.description || 'No description provided'}
       </p>
       
-      <div class="card-actions">
-        ${card.docUrl
-      ? `<button class="btn btn-xs btn-primary open-doc-btn" title="Open attached document">
-                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                </svg>
-                Open Doc
-              </button>`
-      : `<button class="btn btn-xs btn-outline attach-doc-btn" title="Attach a document">
-                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
-                </svg>
-                Attach Doc
-              </button>`
-    }
-      </div>
-      
       <div class="progress-container">
         <div class="progress-label">
           <span>Progress</span>
@@ -201,6 +167,23 @@ function renderStudyCard(card) {
           </svg>
           <span>${card.lastStudiedAt ? 'Studied' : 'Not studied'}</span>
         </div>
+      </div>
+
+      <div class="card-actions">
+      ${card.docUrl
+      ? `<button class="btn btn-xs btn-primary open-doc-btn" title="Open attached document">
+              <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+              </svg>
+              Open Doc
+            </button>`
+        : `<button class="btn btn-xs btn-outline attach-doc-btn" title="Attach a document">
+              <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+              </svg>
+              Attach Doc
+            </button>`
+        }
       </div>
     </div>
   `;

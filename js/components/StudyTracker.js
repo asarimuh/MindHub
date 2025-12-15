@@ -129,7 +129,6 @@ setupEventListeners() {
     ?.addEventListener('click', () => this.openAddModal());
 }
 
-
   /* =============================
    * 4. MODALS
    * ============================= */

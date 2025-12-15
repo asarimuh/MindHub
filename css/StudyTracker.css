@@ -16,16 +16,6 @@
   flex-direction: column;
 }
 
-/* Study Tracker Header - Fixed */
-.study-tracker-header {
-  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsla(var(--primary), 0.9) 100%);
-  padding: 1.5rem 2rem;
-  border-radius: calc(var(--radius) + 0.25rem);
-  margin-bottom: 2rem;
-  box-shadow: var(--card-shadow);
-  color: hsl(var(--card-foreground)) !important;
-}
-
 /* Ensure text is visible */
 .study-tracker-header .subtitle,
 .study-tracker-header .subtitle p {
@@ -329,7 +319,7 @@
 .card-actions {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-top: 1rem;
 }
 
 .open-doc-btn, .attach-doc-btn {
