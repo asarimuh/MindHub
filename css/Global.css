@@ -65,9 +65,13 @@ aside {
 
 /* Active link */
 #sidebar-nav .active {
-  /* background: #111827; */
+  background: #ffffff;
   color: rgb(0, 0, 0) !important;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+#sidebar-nav {
+  background-color: #f9fbfe;
 }
 
 /* Active link hover */
@@ -402,3 +406,4 @@ main {
 .study-card.very-stale {
   opacity: 0.45;
 }
+
