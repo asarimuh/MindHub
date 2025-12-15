@@ -93,6 +93,11 @@ class StudyTracker {
       if (e.target.id === 'save-study-card') {
         this.handleAddStudyCard();
       }
+
+      if (e.target.closest('#delete-study-card')) {
+        this.deleteCurrentCard();
+        return;
+      }
     });
 
     document
@@ -164,6 +169,29 @@ class StudyTracker {
     document.getElementById('page-content').innerHTML = this.render();
     this.init();
   }
+
+  deleteCurrentCard() {
+  if (this.currentEditingCardId == null) return;
+
+  const confirmed = confirm(
+    'Are you sure you want to delete this study card? This action cannot be undone.'
+  );
+
+  if (!confirmed) return;
+
+  this.studyCards = this.studyCards.filter(
+    card => card.id !== this.currentEditingCardId
+  );
+
+  this.saveStudyCards();
+  this.closeDetailModal();
+
+  // Re-render board
+  const pageContent = document.getElementById('page-content');
+  pageContent.innerHTML = this.render();
+  this.init();
+}
+
 
   /* =============================
    * 5. CARD ACTIONS
