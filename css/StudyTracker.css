@@ -1,51 +1,529 @@
-/* Study Tracker Styles */
-.kanban-column {
-  min-height: 600px;
-  background-color: #f7f7fb;
+/* Study Tracker - Enhanced Styles */
+:root {
+  --planned: 210 100% 50%;
+  --in-progress: 45 100% 50%;
+  --reviewing: 280 80% 60%;
+  --completed: 145 80% 40%;
+  --column-bg: 220 25% 98%;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --card-hover-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Container & Layout */
+.kanban-board-container {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Study Tracker Header - Fixed */
+.study-tracker-header {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsla(var(--primary), 0.9) 100%);
+  padding: 1.5rem 2rem;
   border-radius: calc(var(--radius) + 0.25rem);
-  padding: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--card-shadow);
+  color: hsl(var(--card-foreground)) !important;
+}
+
+/* Ensure text is visible */
+.study-tracker-header .subtitle,
+.study-tracker-header .subtitle p {
+  color: hsl(var(--card-foreground)) !important;
+}
+
+/* Header Controls - Fixed */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Search input - Fixed */
+.search-container {
+  position: relative;
+  flex: 1;
+  min-width: 280px;
+}
+
+.search-container svg {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: hsl(var(--muted-foreground));
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+#study-search {
+  width: 100%;
+  padding: 0.625rem 1rem 0.625rem 2.75rem;
+  border: 1px solid hsl(var(--border));
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border-radius: calc(var(--radius) - 0.125rem);
+  font-size: 0.875rem;
+}
+
+#study-search:focus {
+  outline: none;
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 2px hsla(var(--primary), 0.2);
+}
+
+#study-search::placeholder {
+  color: hsl(var(--muted-foreground));
+  opacity: 0.7;
+}
+
+/* Buttons - Fixed */
+#filter-study-btn,
+#add-study-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: calc(var(--radius) - 0.125rem);
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#filter-study-btn {
+  background-color: hsla(var(--secondary), 0.1);
+  color: hsl(var(--secondary-foreground));
+  border: 1px solid hsl(var(--border));
+}
+
+#filter-study-btn:hover {
+  background-color: hsla(var(--secondary), 0.2);
+  transform: translateY(-1px);
+}
+
+#add-study-card-btn {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: 1px solid hsl(var(--primary));
+}
+
+#add-study-card-btn:hover {
+  background-color: hsl(var(--primary));
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px hsla(var(--primary), 0.3);
+}
+
+/* Make sure SVG icons are visible */
+.header-controls svg {
+  color: currentColor;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Alternative: If you prefer a simpler header without gradient */
+/* 
+.study-tracker-header {
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  padding: 1.5rem 2rem;
+  border-radius: calc(var(--radius) + 0.25rem);
+  margin-bottom: 2rem;
+  box-shadow: var(--card-shadow);
+}
+
+.study-tracker-header h1 {
+  color: hsl(var(--foreground));
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.study-tracker-header .subtitle {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.95rem;
+  max-width: 600px;
+}
+*/
+
+/* Kanban Board */
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  flex: 1;
+}
+
+.kanban-column {
+  background-color: hsl(var(--column-bg));
+  border-radius: calc(var(--radius) + 0.5rem);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid hsl(var(--border));
+  transition: transform 0.2s ease;
+}
+
+.kanban-column:hover {
+  transform: translateY(-4px);
+}
+
+.kanban-column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid;
+}
+
+.kanban-column.planned .kanban-column-header {
+  border-color: hsl(var(--planned));
+}
+
+.kanban-column.in-progress .kanban-column-header {
+  border-color: hsl(var(--in-progress));
+}
+
+.kanban-column.reviewing .kanban-column-header {
+  border-color: hsl(var(--reviewing));
+}
+
+.kanban-column.completed .kanban-column-header {
+  border-color: hsl(var(--completed));
+}
+
+.kanban-column h3 {
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.column-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.kanban-column.planned .column-count {
+  background-color: hsla(var(--planned), 0.1);
+  color: hsl(var(--planned));
+}
+
+.kanban-column.in-progress .column-count {
+  background-color: hsla(var(--in-progress), 0.1);
+  color: hsl(var(--in-progress));
+}
+
+.kanban-column.reviewing .column-count {
+  background-color: hsla(var(--reviewing), 0.1);
+  color: hsl(var(--reviewing));
+}
+
+.kanban-column.completed .column-count {
+  background-color: hsla(var(--completed), 0.1);
+  color: hsl(var(--completed));
+}
+
+/* Study Cards */
+.study-column {
+  flex: 1;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
 }
 
 .study-card {
   background-color: hsl(var(--card));
-  border-radius: calc(var(--radius) - 0.125rem);
-  padding: 1rem;
-  margin-bottom: 0.75rem;
+  border-radius: calc(var(--radius) + 0.125rem);
+  padding: 1.25rem;
   cursor: pointer;
-  transition: all 0.2s;
-  border-left: 4px solid hsl(var(--primary));
+  transition: all 0.25s ease;
+  border: 1px solid hsl(var(--border));
+  box-shadow: var(--card-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.study-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background-color: hsl(var(--primary));
 }
 
 .study-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: var(--card-hover-shadow);
+  border-color: hsl(var(--primary));
 }
 
-.status-badge {
+.study-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.study-card-title {
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: hsl(var(--foreground));
+  margin-right: 0.5rem;
+  flex: 1;
+}
+
+.card-status-badge {
   display: inline-flex;
   align-items: center;
-  border-radius: 9999px;
-  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
   font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+}
+
+.study-card.status-planned .card-status-badge {
+  background-color: hsla(var(--planned), 0.1);
+  color: hsl(var(--planned));
+}
+
+.study-card.status-in-progress .card-status-badge {
+  background-color: hsla(var(--in-progress), 0.1);
+  color: hsl(var(--in-progress));
+}
+
+.study-card.status-reviewing .card-status-badge {
+  background-color: hsla(var(--reviewing), 0.1);
+  color: hsl(var(--reviewing));
+}
+
+.study-card.status-completed .card-status-badge {
+  background-color: hsla(var(--completed), 0.1);
+  color: hsl(var(--completed));
+}
+
+.study-card-description {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.open-doc-btn, .attach-doc-btn {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+}
+
+.progress-container {
+  margin-bottom: 1rem;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 0.375rem;
+}
+
+.progress-bar {
+  height: 6px;
+  background-color: hsl(var(--muted));
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.study-card.status-planned .progress-fill {
+  background-color: hsl(var(--planned));
+}
+
+.study-card.status-in-progress .progress-fill {
+  background-color: hsl(var(--in-progress));
+}
+
+.study-card.status-reviewing .progress-fill {
+  background-color: hsl(var(--reviewing));
+}
+
+.study-card.status-completed .progress-fill {
+  background-color: hsl(var(--completed));
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  padding-top: 0.75rem;
+  border-top: 1px solid hsl(var(--border));
+}
+
+.card-date {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+/* Stale Cards */
+.study-card.stale {
+  opacity: 0.8;
+  border-left-color: #f59e0b;
+}
+
+.study-card.very-stale {
+  opacity: 0.6;
+  border-left-color: #ef4444;
+}
+
+/* Drag & Drop */
+.dragging {
+  opacity: 0.6;
+  transform: rotate(3deg);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.drop-zone-highlight {
+  background-color: hsla(var(--primary), 0.05);
+  border: 2px dashed hsl(var(--primary));
+}
+
+/* Empty State */
+.empty-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  color: hsl(var(--muted-foreground));
+  border: 2px dashed hsl(var(--border));
+  border-radius: calc(var(--radius));
+}
+
+.empty-column svg {
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-column p {
+  font-size: 0.875rem;
+  max-width: 200px;
+}
+
+/* Add Card Button */
+#add-study-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
   font-weight: 500;
+  background: white;
+  color: hsl(var(--primary));
+  border: 1px solid hsl(var(--border));
 }
 
-.status-planned {
-  background-color: #f3f4f6;
-  color: #6b7280;
+#add-study-card-btn:hover {
+  background: hsl(var(--primary));
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px hsla(var(--primary), 0.3);
 }
 
-.status-in-progress {
-  background-color: #dbeafe;
-  color: #1e40af;
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .kanban-board {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.status-reviewing {
-  background-color: #fef3c7;
-  color: #92400e;
+@media (max-width: 768px) {
+  .kanban-board {
+    grid-template-columns: 1fr;
+  }
+  
+  .study-tracker-header {
+    padding: 1.25rem;
+  }
+  
+  .header-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-container {
+    min-width: 100%;
+  }
 }
 
-.status-completed {
-  background-color: #d1fae5;
-  color: #065f46;
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.study-card {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* Modal Enhancements */
+.modal-overlay {
+  background-color: hsla(0, 0%, 0%, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  animation: modalSlideIn 0.3s ease;
+  border-radius: calc(var(--radius) + 0.5rem);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

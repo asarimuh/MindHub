@@ -24,20 +24,24 @@ class StudyTracker {
    * ============================= */
 
   renderColumn(status, title) {
-    const count = this.studyCards.filter(card => card.status === status).length;
+    const cardsHtml = this.renderStudyCardsByStatus(status);
+    const emptyHtml = renderEmptyState(status, this.studyCards);
 
     return `
-      <div class="kanban-column">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="font-semibold">${title}</h3>
-          <span class="status-badge status-${status}" id="${status}-count">${count}</span>
-        </div>
-        <div id="${status}-column" class="study-column">
-          ${this.renderStudyCardsByStatus(status)}
-        </div>
+    <div class="kanban-column">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-semibold">${title}</h3>
+        <span class="status-badge status-${status}" id="${status}-count">
+          ${this.studyCards.filter(card => card.status === status).length}
+        </span>
       </div>
-    `;
+      <div id="${status}-column" class="study-column">
+        ${cardsHtml || emptyHtml}
+      </div>
+    </div>
+  `;
   }
+
 
   renderStudyCardsByStatus(status) {
     return this.studyCards
@@ -70,11 +74,10 @@ class StudyTracker {
         </p>
 
         <div class="flex gap-2 mb-2">
-          ${
-            card.docUrl
-              ? `<button class="btn btn-xs btn-secondary open-doc-btn">Open Doc</button>`
-              : `<button class="btn btn-xs btn-outline attach-doc-btn">Attach Doc</button>`
-          }
+          ${card.docUrl
+        ? `<button class="btn btn-xs btn-secondary open-doc-btn">Open Doc</button>`
+        : `<button class="btn btn-xs btn-outline attach-doc-btn">Attach Doc</button>`
+      }
         </div>
 
         <div class="flex items-center text-xs text-gray-500 mb-2">
@@ -131,7 +134,7 @@ class StudyTracker {
   }
 
   renderDetailModal() {
-  return `
+    return `
     <div class="modal-content p-6 w-full max-w-3xl">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold">Study Card Details</h3>
@@ -177,98 +180,100 @@ class StudyTracker {
       </div>
     </div>
   `;
-}
+  }
 
 
   /* =============================
    * 3. SETUP & EVENT BINDING
    * ============================= */
 
- setupDragAndDrop() {
-  ['planned', 'in-progress', 'reviewing', 'completed'].forEach(status => {
-    const columnEl = document.getElementById(`${status}-column`);
-    if (!columnEl) return;
+  setupDragAndDrop() {
+    ['planned', 'in-progress', 'reviewing', 'completed'].forEach(status => {
+      const columnEl = document.getElementById(`${status}-column`);
+      if (!columnEl) return;
 
-    new Sortable(columnEl, {
-      group: 'study-cards',
-      animation: 150,
-      onEnd: evt => {
-        const cardId = Number(evt.item.dataset.cardId);
+      new Sortable(columnEl, {
+        group: 'study-cards',
+        animation: 150,
+        ghostClass: 'dragging',  // optional CSS for ghost
+        swapThreshold: 0.65,
+        onEnd: evt => {
+          const cardId = Number(evt.item.dataset.cardId);
 
-        const newStatus = evt.to.id.replace('-column', '');
-        this.updateCardStatus(cardId, newStatus);
-      }
+          const newStatus = evt.to.id.replace('-column', '');
+          this.updateCardStatus(cardId, newStatus);
+        }
+      });
     });
-  });
   }
 
 
- setupEventListeners() {
-  document.addEventListener('click', (e) => {
+  setupEventListeners() {
+    document.addEventListener('click', (e) => {
 
-    /* ===============================
-       STUDY CARD INTERACTIONS
-    =============================== */
+      /* ===============================
+         STUDY CARD INTERACTIONS
+      =============================== */
 
-    const cardEl = e.target.closest('.study-card');
+      const cardEl = e.target.closest('.study-card');
 
-    if (cardEl) {
-      const cardId = Number(cardEl.dataset.cardId);
-      const card = this.studyCards.find(c => c.id === cardId);
-      if (!card) return;
+      if (cardEl) {
+        const cardId = Number(cardEl.dataset.cardId);
+        const card = this.studyCards.find(c => c.id === cardId);
+        if (!card) return;
 
-      // Open doc
-      if (e.target.classList.contains('open-doc-btn')) {
-        window.open(card.docUrl, '_blank');
-        this.markStudied(cardId);
+        // Open doc
+        if (e.target.classList.contains('open-doc-btn')) {
+          window.open(card.docUrl, '_blank');
+          this.markStudied(cardId);
+          return;
+        }
+
+        // Click card body → open detail modal
+        if (!e.target.closest('button')) {
+          this.openDetailModal(cardId);
+          return;
+        }
+      }
+
+      /* ===============================
+         DETAIL MODAL BUTTONS
+      =============================== */
+
+      if (
+        e.target.closest('#close-detail-modal') ||
+        e.target.closest('#cancel-detail-modal')
+      ) {
+        this.closeDetailModal();
         return;
       }
 
-      // Click card body → open detail modal
-      if (!e.target.closest('button')) {
-        this.openDetailModal(cardId);
+      if (e.target.id === 'save-detail-modal') {
+        this.saveDetailModal();
         return;
       }
-    }
 
-    /* ===============================
-       DETAIL MODAL BUTTONS
-    =============================== */
+      /* ===============================
+         ADD STUDY CARD MODAL
+      =============================== */
 
-    if (
-      e.target.closest('#close-detail-modal') ||
-      e.target.closest('#cancel-detail-modal')
-    ) {
-      this.closeDetailModal();
-      return;
-    }
+      if (
+        e.target.closest('#close-add-modal') ||
+        e.target.closest('#cancel-add-study')
+      ) {
+        this.closeAddModal();
+        return;
+      }
 
-    if (e.target.id === 'save-detail-modal') {
-      this.saveDetailModal();
-      return;
-    }
+      if (e.target.id === 'save-study-card') {
+        this.handleAddStudyCard();
+        return;
+      }
+    });
 
-    /* ===============================
-       ADD STUDY CARD MODAL
-    =============================== */
-
-    if (
-      e.target.closest('#close-add-modal') ||
-      e.target.closest('#cancel-add-study')
-    ) {
-      this.closeAddModal();
-      return;
-    }
-
-    if (e.target.id === 'save-study-card') {
-      this.handleAddStudyCard();
-      return;
-    }
-  });
-
-  document
-    .getElementById('add-study-card-btn')
-    ?.addEventListener('click', () => this.openAddModal());
+    document
+      .getElementById('add-study-card-btn')
+      ?.addEventListener('click', () => this.openAddModal());
   }
 
   /* =============================
@@ -285,62 +290,61 @@ class StudyTracker {
   }
 
   openDetailModal(cardId) {
-  const card = this.studyCards.find(c => c.id === cardId);
-  if (!card) return;
+    const card = this.studyCards.find(c => c.id === cardId);
+    if (!card) return;
 
-  this.currentEditingCardId = cardId;
+    this.currentEditingCardId = cardId;
 
-  const modal = document.getElementById('study-card-detail-modal');
-  if (!modal) return;
+    const modal = document.getElementById('study-card-detail-modal');
+    if (!modal) return;
 
-  const el = id => document.getElementById(id);
+    const el = id => document.getElementById(id);
 
-  el('detail-title').value = card.title;
-  el('detail-description').value = card.description || '';
-  el('detail-status').value = card.status;
-  el('detail-doc-url').value = card.docUrl || '';
+    el('detail-title').value = card.title;
+    el('detail-description').value = card.description || '';
+    el('detail-status').value = card.status;
+    el('detail-doc-url').value = card.docUrl || '';
 
-  el('detail-created').textContent =
-    `Created: ${Helpers.formatDate(card.created_at)}`;
+    el('detail-created').textContent =
+      `Created: ${Helpers.formatDate(card.created_at)}`;
 
-  el('detail-updated').textContent =
-    `Updated: ${Helpers.formatDate(card.updated_at)}`;
+    el('detail-updated').textContent =
+      `Updated: ${Helpers.formatDate(card.updated_at)}`;
 
-  el('detail-last-studied').textContent =
-    card.lastStudiedAt
-      ? `Last studied: ${Helpers.formatDate(card.lastStudiedAt)}`
-      : 'Not studied yet';
+    el('detail-last-studied').textContent =
+      card.lastStudiedAt
+        ? `Last studied: ${Helpers.formatDate(card.lastStudiedAt)}`
+        : 'Not studied yet';
 
-  modal.classList.remove('hidden');
+    modal.classList.remove('hidden');
   }
 
   saveDetailModal() {
-  const card = this.studyCards.find(c => c.id === this.currentEditingCardId);
-  if (!card) return;
+    const card = this.studyCards.find(c => c.id === this.currentEditingCardId);
+    if (!card) return;
 
-  card.title = document.getElementById('detail-title').value.trim();
-  card.description = document.getElementById('detail-description').value.trim();
-  card.status = document.getElementById('detail-status').value;
-  card.docUrl = document.getElementById('detail-doc-url').value.trim() || null;
-  card.updated_at = new Date().toISOString();
+    card.title = document.getElementById('detail-title').value.trim();
+    card.description = document.getElementById('detail-description').value.trim();
+    card.status = document.getElementById('detail-status').value;
+    card.docUrl = document.getElementById('detail-doc-url').value.trim() || null;
+    card.updated_at = new Date().toISOString();
 
-  this.saveStudyCards();
-  this.closeDetailModal();
+    this.saveStudyCards();
+    this.closeDetailModal();
 
-  // Re-render board
-  const pageContent = document.getElementById('page-content');
-  pageContent.innerHTML = this.render();
-  this.init();
+    // Re-render board
+    const pageContent = document.getElementById('page-content');
+    pageContent.innerHTML = this.render();
+    this.init();
   }
 
   closeDetailModal() {
-  document
-    .getElementById('study-card-detail-modal')
-    .classList.add('hidden');
+    document
+      .getElementById('study-card-detail-modal')
+      .classList.add('hidden');
 
-  this.currentEditingCardId = null;
+    this.currentEditingCardId = null;
   }
-
 
   /* =============================
    * 5. CARD ACTIONS / STATE
@@ -379,10 +383,29 @@ class StudyTracker {
     const card = this.studyCards.find(c => c.id === cardId);
     if (!card) return;
 
+    const oldStatus = card.status;
     card.status = newStatus;
     card.updated_at = new Date().toISOString();
-    this.updateColumnCounts();
     this.saveStudyCards();
+
+    // Re-render only affected columns
+    this.updateColumns([oldStatus, newStatus]);
+  }
+
+  updateColumns(statuses) {
+    statuses.forEach(status => {
+      const columnEl = document.getElementById(`${status}-column`);
+      if (!columnEl) return;
+
+      // Use View.js rendering functions to rebuild full HTML
+      const cardsHtml = renderStudyCardsByStatus(status, this.studyCards);
+      const emptyHtml = renderEmptyState(status, this.studyCards);
+
+      columnEl.innerHTML = cardsHtml || emptyHtml;
+    });
+
+    // Update counts in the column headers
+    this.updateColumnCounts();
   }
 
   markStudied(cardId) {
@@ -411,5 +434,16 @@ class StudyTracker {
   saveStudyCards() {
     Storage.set('studyCards', this.studyCards);
     Storage.set('nextStudyCardId', this.nextId);
+  }
+
+  updateEmptyStates(statuses) {
+    statuses.forEach(status => {
+      const columnEl = document.getElementById(`${status}-column`);
+      if (!columnEl) return;
+
+      const cardsHtml = this.renderStudyCardsByStatus(status);
+      const emptyHtml = renderEmptyState(status, this.studyCards);
+      columnEl.innerHTML = cardsHtml || emptyHtml;
+    });
   }
 }

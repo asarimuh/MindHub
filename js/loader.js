@@ -96,7 +96,7 @@ class ScriptLoader {
       scriptEl.src = script.path;
       scriptEl.onload = () => {
         this.loadedScripts.add(scriptName);
-        console.log(`✓ Loaded: ${scriptName}`);
+        // console.log(`✓ Loaded: ${scriptName}`);
         resolve();
       };
       scriptEl.onerror = () => {
