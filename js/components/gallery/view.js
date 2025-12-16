@@ -4,10 +4,10 @@ function renderSimpleGallery(images) {
       <div class="mb-8 flex justify-between items-center">
         <!-- Left side -->
         <div class="header-left">
-          <h1 class="text-2xl font-semibold tracking-tight mb-2">Documents</h1>
-          <p class="text-muted-foreground">Your Google Drive files and documents</p>
+          <h1 class="text-2xl font-semibold tracking-tight mb-2">Gallery</h1>
+          <p class="text-muted-foreground">Random images . . . </p>
         </div>
-      
+
         <!-- Right side buttons -->
         <div class="header-right">
           <div class="header-buttons flex items-center gap-2">
