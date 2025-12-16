@@ -9,7 +9,15 @@ class Documents {
   }
 
   init() {
-    DocumentsService.loadDocs(this);
+    const hasCache = DocumentsService.loadFromCache(this);
+
+    // Only auto-fetch if no cache exists
+    if (!hasCache) {
+      DocumentsService.fetchFromServer(this).catch(() => {
+        const grid = document.getElementById('docs-grid');
+        if (grid) grid.innerHTML = this.renderEmptyState();
+      });
+    }
     this.setupEventListeners();
   }
 
@@ -27,6 +35,22 @@ class Documents {
 
   setupEventListeners() {
     const searchInput = document.getElementById('documents-search');
+    const refreshBtn = document.getElementById('documents-refresh');
+
+    refreshBtn.addEventListener('click', async () => {
+    refreshBtn.disabled = true;
+    refreshBtn.textContent = 'Refreshing...';
+
+    try {
+      await DocumentsService.fetchFromServer(this);
+    } catch {
+      alert('Failed to refresh documents.');
+    } finally {
+      refreshBtn.disabled = false;
+      refreshBtn.textContent = 'Refresh';
+    }
+    });
+
     searchInput.addEventListener('input', Helpers.debounce((e) => {
       const query = e.target.value.toLowerCase();
       const filtered = this.allFiles.filter(file => file.name.toLowerCase().includes(query));
