@@ -34,6 +34,42 @@ function renderDocuments(allFiles) {
     <div id="docs-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       ${renderDocumentsGrid(allFiles)}
     </div>
+
+    <!-- Documents Refresh Failed Modal -->
+<div
+  id="documents-refresh-failed-modal"
+  class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/40"
+>
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-sm p-5">
+    <div class="flex items-start gap-3">
+      <div class="w-10 h-10 flex items-center justify-center rounded-full bg-amber-100">
+        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z" />
+        </svg>
+      </div>
+
+      <div class="flex-1">
+        <h3 class="text-sm font-semibold text-gray-900">
+          Refresh failed
+        </h3>
+        <p class="text-sm text-muted-foreground mt-1">
+          Could not fetch new documents. Showing the last saved data instead.
+        </p>
+      </div>
+    </div>
+
+    <div class="flex justify-end mt-5">
+      <button
+        id="close-documents-refresh-modal"
+        class="btn btn-secondary text-sm"
+      >
+        OK
+      </button>
+    </div>
+  </div>
+</div>
+
   `;
 }
 

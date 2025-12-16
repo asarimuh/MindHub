@@ -38,17 +38,17 @@ class Documents {
     const refreshBtn = document.getElementById('documents-refresh');
 
     refreshBtn.addEventListener('click', async () => {
-    refreshBtn.disabled = true;
-    refreshBtn.textContent = 'Refreshing...';
+      refreshBtn.disabled = true;
+      refreshBtn.textContent = 'Refreshing...';
 
-    try {
-      await DocumentsService.fetchFromServer(this);
-    } catch {
-      alert('Failed to refresh documents.');
-    } finally {
-      refreshBtn.disabled = false;
-      refreshBtn.textContent = 'Refresh';
-    }
+      try {
+        await DocumentsService.fetchFromServer(this);
+      } catch {
+        this.openDocumentsRefreshFailedModal(); // show modal immediately
+      } finally {
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = 'Refresh';
+      }
     });
 
     searchInput.addEventListener('input', Helpers.debounce((e) => {
@@ -57,5 +57,23 @@ class Documents {
       const grid = document.getElementById('docs-grid');
       if (grid) grid.innerHTML = renderDocumentsGrid(filtered);
     }, 300));
+
+    const closeModalBtn = document.getElementById('close-documents-refresh-modal');
+    closeModalBtn?.addEventListener('click', () => {
+      this.closeDocumentsRefreshFailedModal();
+    });
   }
+
+  openDocumentsRefreshFailedModal() {
+    document
+      .getElementById('documents-refresh-failed-modal')
+      ?.classList.remove('hidden');
+  }
+
+  closeDocumentsRefreshFailedModal() {
+    document
+      .getElementById('documents-refresh-failed-modal')
+      ?.classList.add('hidden');
+  }
+
 }

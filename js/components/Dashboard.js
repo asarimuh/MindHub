@@ -23,7 +23,11 @@ class Dashboard {
     this.completedTasks = Storage.get("dashboard_completed_tasks") || [];
     this.currentTaskFilter = Storage.get("dashboard_task_filter", "all");
 
-    this.learning = Storage.get("dashboard_learning") || [];
+    const studyCards = Storage.get("studyCards") || [];
+    this.learning = studyCards
+      .filter(card => card.status !== 'completed')
+      .map(card => card.title);
+
     this.reflections = Storage.get("dashboard_reflections") || [];
 
     // Photo widget
@@ -50,23 +54,6 @@ class Dashboard {
   render() {
     return `
       <div class="dashboard-container">
-        <!-- Header -->
-        <div class="grid grid-cols-1 lg:grid-cols-8 gap-2 mb-6">
-          <div class="mb-8 lg:col-span-4">
-            <h1 class="text-3xl font-semibold tracking-tight mb-2">Dashboard</h1>
-            <p class="text-muted-foreground">Welcome to your personal workspace</p>
-            </div>
-            <div class="lg:col-span-4">
-            <!-- Quick Stats Row -->
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                ${renderStatCard('Tasks', this.tasks.length, '📝', 'green')}
-                ${renderStatCard('Learning', this.learning.length, '📚', 'purple')}
-                ${renderStatCard('Goals', this.goals.length, '🎯', 'blue')}
-                ${renderStatCard('Reflections', this.reflections.length, '✍️', 'orange')}
-              </div>
-            </div>
-        </div>
-
         <!-- Main Grid Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
           
@@ -209,16 +196,13 @@ class Dashboard {
 
             <!-- What You're Learning -->
             <div class="card p-6">
-              <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center justify-between mb-2">
                 <h2 class="text-xl font-semibold">Current Learning</h2>
                 <span class="text-sm text-muted-foreground">${this.learning.length} items</span>
               </div>
-              <div class="flex gap-2 mb-4">
-                <input id="learning-input"
-                       class="input flex-1"
-                       placeholder="What are you learning?" />
-                <button id="learning-add-btn" class="btn btn-secondary whitespace-nowrap">Add</button>
-              </div>
+              <p class="text-xs text-muted-foreground mb-6">
+                Synced from Study Tracker
+              </p>
               <div id="learning-list" class="space-y-2">
                 ${renderLearningList(this.learning)}
               </div>
@@ -607,159 +591,198 @@ class Dashboard {
 
   /* ============== GITHUB ACTIVITY ============== */
 
-  async fetchGitHubActivity() {
-    try {
-      const res = await fetch("http://localhost:3000/api/github");
-      const data = await res.json();
+  async fetchGitHubActivity(force = false) {
+    const cacheKey = 'github_activity_cache';
 
-      const weeks = data.data.user.contributionsCollection.contributionCalendar.weeks;
-      const days = weeks.flatMap(w => w.contributionDays);
-      const total = days.reduce((sum, d) => sum + d.contributionCount, 0);
+    if (!force) {
+      const cached = Storage.get(cacheKey);
 
-      const container = document.getElementById("github-commits");
+      if (cached?.data) {
+        this.renderGitHubFromData(cached.data, true);
+        return;
+      }
+    }
 
-      if (container) {
-        const monthHeaders = GitHubService.renderMonthHeaders(weeks);
-        const contributionGrid = GitHubService.renderContributionGrid(weeks);
+    // fall through → fetch from API
+    await this.fetchGitHubFromAPI();
+  }
 
-        container.innerHTML = `
-        <div class="w-full space-y-6">
-        <!-- Contribution Graph -->
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <h3 class="text-sm font-semibold text-gray-900">Year in Code</h3>
-              <span class="text-xs text-muted-foreground bg-gray-100 px-2 py-1 rounded-md">${total} commits</span>
+  renderGitHubFromData(data, fromCache = false) {
+    const weeks =
+      data.data.user.contributionsCollection.contributionCalendar.weeks;
+
+    const days = weeks.flatMap(w => w.contributionDays);
+    const total = days.reduce((sum, d) => sum + d.contributionCount, 0);
+
+    const container = document.getElementById("github-commits");
+    if (!container) return;
+
+    const monthHeaders = GitHubService.renderMonthHeaders(weeks);
+    const contributionGrid = GitHubService.renderContributionGrid(weeks);
+
+    container.innerHTML = `
+    <div class="w-full space-y-6">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-semibold text-gray-900">Year in Code</h3>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-muted-foreground bg-gray-100 px-2 py-1 rounded-md">
+            ${total} commits
+          </span>
+          <button
+            id="github-refresh-btn"
+            class="btn btn-secondary text-xs px-2 py-1"
+          >
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      ${fromCache ? `
+        <p class="text-[10px] text-muted-foreground">
+          Loaded from cache
+        </p>
+      ` : ''}
+
+      <!-- 🔒 DO NOT CHANGE THIS STRUCTURE -->
+      <div class="bg-white rounded-lg border border-gray-200 p-4">
+        <div class="overflow-x-auto">
+          <div class="flex flex-col">
+
+            <!-- Month Header Row -->
+            <div
+              class="grid auto-cols-fr grid-flow-col mb-1"
+              style="grid-template-rows: none; grid-auto-flow: column;"
+            >
+              ${monthHeaders}
             </div>
-            
-            <div class="bg-white rounded-lg border border-gray-200 p-4">
-              
-              <!-- GitHub-style Calendar -->
-              <div class="overflow-x-auto">
-                <div class="flex flex-col">
 
-                  <!-- Month Header Row -->
-                  <div class="grid auto-cols-fr grid-flow-col mb-1" style="grid-template-rows: none; grid-auto-flow: column;">
-                    ${monthHeaders}
-                  </div>
-
-                  <!-- Contribution Grid -->
-                  <div class="w-full">
-                    <div class="grid auto-cols-fr grid-rows-7 gap-[3px]" style="grid-auto-flow: column;--cell-size: min(max(0.5rem, calc(100vw / 110)), 1rem);">
-                      ${contributionGrid}
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-
-              <!-- Legend -->
-              <div class="flex items-center justify-start gap-3 mt-4 pt-3 border-t border-gray-100">
-                <span class="text-[10px] text-gray-500">Less</span>
-                <div class="flex items-center gap-0.5">
-                  <div class="w-3 h-3 bg-[#ebedf0] border border-gray-100"></div>
-                  <div class="w-3 h-3 bg-[#9be9a8] border border-gray-100"></div>
-                  <div class="w-3 h-3 bg-[#40c463] border border-gray-100"></div>
-                  <div class="w-3 h-3 bg-[#30a14e] border border-gray-100"></div>
-                </div>
-                <span class="text-[10px] text-gray-500">More</span>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- Activity Breakdown -->
-          <div class="space-y-3">
-            <h3 class="text-sm font-medium text-gray-900">Activity Breakdown</h3>
-            <div class="grid grid-cols-2 gap-3">
-              <div class="flex items-center justify-between p-3 bg-blue-50/50 rounded-lg border text-xs">
-                <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 bg-[#ebedf0] rounded-[1px] border border-gray-200"></div>
-                  <span class="text-gray-700">No commits</span>
-                </div>
-                <span class="font-medium text-gray-900">${GitHubService.getDaysWithCount(days, 0)} days</span>
-              </div>
-              <div class="flex items-center justify-between p-3 bg-green-50/50 rounded-lg border text-xs">
-                <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 bg-[#9be9a8] rounded-[1px] border border-gray-200"></div>
-                  <span class="text-gray-700">1-2 commits</span>
-                </div>
-                <span class="font-medium text-gray-900">${GitHubService.getDaysWithCount(days, 1, 2)} days</span>
-              </div>
-              <div class="flex items-center justify-between p-3 bg-emerald-50/50 rounded-lg border text-xs">
-                <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 bg-[#40c463] rounded-[1px] border border-gray-200"></div>
-                  <span class="text-gray-700">3-4 commits</span>
-                </div>
-                <span class="font-medium text-gray-900">${GitHubService.getDaysWithCount(days, 3, 4)} days</span>
-              </div>
-              <div class="flex items-center justify-between p-3 bg-teal-50/50 rounded-lg border text-xs">
-                <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 bg-[#30a14e] rounded-[1px] border border-gray-200"></div>
-                  <span class="text-gray-700">5+ commits</span>
-                </div>
-                <span class="font-medium text-gray-900">${GitHubService.getDaysWithCount(days, 5)} days</span>
+            <!-- Contribution Grid -->
+            <div class="w-full">
+              <div
+                class="grid auto-cols-fr grid-rows-7 gap-[3px]"
+                style="grid-auto-flow: column; --cell-size: min(max(0.5rem, calc(100vw / 110)), 1rem);"
+              >
+                ${contributionGrid}
               </div>
             </div>
+
           </div>
         </div>
-      `;
 
-        this.animateGitHubCommits();
-      }
-    } catch (err) {
-      const container = document.getElementById("github-commits");
-      if (container) {
-        container.innerHTML = `
-          <div class="text-center py-8 space-y-3">
-            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
-              <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-              </svg>
-            </div>
-            <div>
-              <h3 class="font-medium text-gray-900 mb-1">Unable to load contributions</h3>
-              <p class="text-sm text-muted-foreground mb-3">Check your connection and try again</p>
-              <button onclick="app.components.dashboard.fetchGitHubActivity()" 
-                      class="btn btn-secondary text-xs px-3 py-1.5">
-                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-                Retry
-              </button>
-            </div>
+        <!-- Legend -->
+        <div class="flex items-center justify-start gap-3 mt-4 pt-3 border-t border-gray-100">
+          <span class="text-[10px] text-gray-500">Less</span>
+          <div class="flex items-center gap-0.5">
+            <div class="w-3 h-3 bg-[#ebedf0] border border-gray-100"></div>
+            <div class="w-3 h-3 bg-[#9be9a8] border border-gray-100"></div>
+            <div class="w-3 h-3 bg-[#40c463] border border-gray-100"></div>
+            <div class="w-3 h-3 bg-[#30a14e] border border-gray-100"></div>
           </div>
-        `;
+          <span class="text-[10px] text-gray-500">More</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GitHub Refresh Failed Modal -->
+<div
+  id="github-refresh-failed-modal"
+  class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/40">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-sm p-5">
+    <div class="flex items-start gap-3">
+      <div class="w-10 h-10 flex items-center justify-center rounded-full bg-amber-100">
+        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z" />
+        </svg>
+      </div>
+
+      <div class="flex-1">
+        <h3 class="text-sm font-semibold text-gray-900">
+          Refresh failed
+        </h3>
+        <p class="text-sm text-muted-foreground mt-1">
+          Could not fetch new GitHub data. Showing the last saved activity instead.
+        </p>
+      </div>
+    </div>
+
+    <div class="flex justify-end mt-5">
+      <button
+        id="close-github-refresh-modal"
+        class="btn btn-secondary text-sm"
+      >
+        OK
+      </button>
+    </div>
+  </div>
+</div>
+  `;
+
+    document
+      .getElementById('github-refresh-btn')
+      ?.addEventListener('click', () => this.fetchGitHubActivity(true));
+
+    const closeGithubModalBtn = document.getElementById('close-github-refresh-modal');
+
+    closeGithubModalBtn?.addEventListener('click', () => {
+      this.closeGitHubRefreshFailedModal();
+      console.log("clicked button");
+    });
+  }
+
+  async fetchGitHubFromAPI() {
+    const container = document.getElementById("github-commits");
+    if (!container) return;
+
+    container.innerHTML = `
+    <div class="flex items-center justify-center py-6 text-sm text-muted-foreground">
+      Refreshing GitHub activity...
+    </div>
+  `;
+
+    try {
+      const res = await fetch("http://localhost:3000/api/github");
+      if (!res.ok) throw new Error("API request failed");
+
+      const data = await res.json();
+
+      Storage.set('github_activity_cache', {
+        fetchedAt: new Date().toISOString(),
+        data
+      });
+
+      this.renderGitHubFromData(data, false);
+
+    } catch (err) {
+      console.error("GitHub refresh failed:", err);
+
+      const cached = Storage.get('github_activity_cache');
+
+      if (cached?.data) {
+        this.renderGitHubFromData(cached.data, true);
+        this.openGitHubRefreshFailedModal();
+      } else {
+        container.innerHTML = `
+      <div class="text-center py-8 text-sm text-muted-foreground">
+        Failed to load GitHub activity.
+      </div>
+    `;
       }
     }
   }
 
-  animateGitHubCommits() {
-    const container = document.getElementById("github-commits");
-    if (!container) return;
+  openGitHubRefreshFailedModal() {
+    document
+      .getElementById('github-refresh-failed-modal')
+      ?.classList.remove('hidden');
+  }
 
-    const commitBoxes = container.querySelectorAll(".commit-box");
-
-    commitBoxes.forEach(box => {
-      box.style.opacity = 0;
-      box.style.transform = 'translateY(10px)';
-      box.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-    });
-
-    const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          commitBoxes.forEach((box, index) => {
-            setTimeout(() => {
-              box.style.opacity = 1;
-              box.style.transform = 'translateY(0)';
-            }, index * 5);
-          });
-          obs.disconnect();
-        }
-      });
-    }, { threshold: 0.1 });
-
-    observer.observe(container);
+  closeGitHubRefreshFailedModal() {
+    document
+      .getElementById('github-refresh-failed-modal')
+      ?.classList.add('hidden');
   }
 
   showNotification(message) {

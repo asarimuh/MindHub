@@ -1,10 +1,5 @@
 function renderNotesPage(notes) {
   return `
-    <div class="mb-8">
-      <h1 class="text-3xl font-semibold tracking-tight mb-2">Quick Notes</h1>
-      <p class="text-muted-foreground">Your quick notes and thoughts</p>
-    </div>
-
     <div class="card p-6">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-semibold">Quick Notes</h2>

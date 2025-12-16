@@ -5,19 +5,6 @@
  * No DOM side effects or mutation.
  */
 
-// ========== STATS CARDS ==========
-function renderStatCard(title, value, icon, color) {
-  return `
-    <div class="card p-3 text-center">
-      <div class="${color} mb-1 text-xl">
-        ${icon}
-      </div>
-      <div class="text-lg font-semibold text-gray-900">${value}</div>
-      <div class="text-xs text-muted-foreground mt-0.5">${title}</div>
-    </div>
-  `;
-}
-
 function renderActivityItem(title, value, colorClass) {
   return `
     <div class="text-center">
@@ -231,21 +218,14 @@ function renderLearningList(learningItems) {
     `;
   }
 
-  return learningItems.map((item, index) => `
-    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-      <div class="flex items-center gap-3 flex-1">
-        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
-        <span class="text-sm flex-1">${item}</span>
-      </div>
-      <button class="delete-btn text-gray-400 hover:text-red-500 transition-colors" 
-              data-index="${index}" 
-              data-list="learning">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
+  return learningItems.map(item => `
+  <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+    <div class="flex items-center gap-3">
+      <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+      <span class="text-sm">${item}</span>
     </div>
-  `).join('');
+  </div>
+`).join('');
 }
 
 // ========== GOALS RENDERING ==========
