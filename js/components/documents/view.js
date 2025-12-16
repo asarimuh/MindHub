@@ -1,7 +1,7 @@
 function renderDocuments(allFiles) {
   return `
     <div class="mb-8">
-      <h1 class="text-3xl font-semibold tracking-tight mb-2">Documents</h1>
+      <h1 class="text-2xl font-semibold tracking-tight mb-2">Documents</h1>
       <p class="text-muted-foreground">Your Google Drive files and documents</p>
     </div>
 

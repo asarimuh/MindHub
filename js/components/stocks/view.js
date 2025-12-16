@@ -1,7 +1,7 @@
 function renderStocksPage(watchlist) {
   return `
     <div class="mb-8">
-      <h1 class="text-3xl font-semibold tracking-tight mb-2">Stocks</h1>
+      <h1 class="text-2xl font-semibold tracking-tight mb-2">Stocks</h1>
       <p class="text-muted-foreground">Your stock watchlist and market data</p>
     </div>
 

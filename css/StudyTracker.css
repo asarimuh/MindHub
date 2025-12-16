@@ -4,7 +4,6 @@
   --in-progress: 45 100% 50%;
   --reviewing: 280 80% 60%;
   --completed: 145 80% 40%;
-  --column-bg: 220 25% 98%;
   --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   --card-hover-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
@@ -142,7 +141,7 @@
 }
 
 .kanban-column {
-  background-color: hsl(var(--column-bg));
+  background-color: hsl(220deg 5.67% 95.49%);
   border-radius: calc(var(--radius) + 0.5rem);
   padding: 1.25rem;
   display: flex;

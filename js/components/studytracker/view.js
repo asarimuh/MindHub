@@ -4,7 +4,7 @@ function renderStudyTrackerPage(studyCards) {
       <!-- Header -->
       <div class="flex justify-between">
         <div class="mb-8">
-          <h1 class="text-3xl font-semibold tracking-tight mb-2">Study Tracker</h1>
+          <h1 class="text-2xl font-semibold tracking-tight mb-2">Study Tracker</h1>
           <p class="text-muted-foreground">Plan → Learn → Review → Done</p>
         </div>
         <div class="header-controls">
