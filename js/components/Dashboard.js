@@ -906,6 +906,7 @@ class Dashboard {
         deadline,
         category,
         completed: false,
+        expanded: false,
         subtasks: [],
         createdAt: new Date().toISOString()
       };
@@ -1071,6 +1072,27 @@ class Dashboard {
           parseInt(deleteSubtaskBtn.dataset.subtaskIndex)
         );
       }
+
+      const toggleBtn = el.closest('.toggle-subtasks');
+if (toggleBtn) {
+  const taskId = toggleBtn.dataset.taskId;
+  const task = this.tasks.find(t => t.id === taskId);
+  if (!task) return;
+
+  task.expanded = !task.expanded;
+  this.saveTasks();
+
+  const taskItem = toggleBtn.closest('.task-item');
+  const subtasksEl = taskItem.querySelector('.transition-subtasks');
+
+  if (!subtasksEl) return;
+
+  subtasksEl.classList.toggle('expanded', task.expanded);
+  subtasksEl.classList.toggle('collapsed', !task.expanded);
+  toggleBtn.classList.toggle('rotated', task.expanded);
+  toggleBtn.textContent = task.expanded ? '▾' : '▸';
+}
+
     });
 
     document.addEventListener('keypress', (e) => {

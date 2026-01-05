@@ -1,5 +1,30 @@
-/* Calendar styles have been migrated to Tailwind utility classes in `index.html`.
-   Original CSS rules removed to avoid duplication/conflicts. */
+.transition-subtasks {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    max-height 250ms ease,
+    opacity 200ms ease,
+    transform 200ms ease;
+}
 
-/* If you need to reintroduce custom calendar rules, add them here. */
+.transition-subtasks.expanded {
+  max-height: 500px;
+  opacity: 1;
+  transform: translateY(0);
+}
 
+.transition-subtasks.collapsed {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.toggle-subtasks {
+  transition: transform 200ms ease;
+}
+
+.toggle-subtasks.rotated {
+  transform: rotate(90deg);
+}

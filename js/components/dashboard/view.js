@@ -100,8 +100,8 @@ function renderTaskItem(task, index) {
           type="checkbox"
           ${task.completed ? 'checked' : ''}
           data-task-id="${task.id}"
-          class="task-check mt-1 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-        />
+          class="task-check mt-1 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"/>
+        <button class="toggle-subtasks text-gray-400 hover:text-gray-700 transition-transform ${task.expanded ? 'rotated' : ''}" data-task-id="${task.id}" title="Toggle subtasks"> ${task.expanded ? "▾" : "▸"} </button>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 mb-1 flex-wrap">
             <span class="text-sm font-medium ${task.completed ? 'line-through text-gray-500' : ''}">
@@ -114,38 +114,36 @@ function renderTaskItem(task, index) {
               ${deadlineIcons[task.deadline]} 
             </span>
           </div>
-          
+
           <!-- Subtasks -->
-          ${task.subtasks && task.subtasks.length > 0 ? `
-            <div class="subtasks ml-4 space-y-1 mt-2">
-              ${task.subtasks.map((subtask, subIndex) => `
-                <div class="flex items-center justify-between gap-2 text-xs">
-                  <div class="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      ${subtask.completed ? 'checked' : ''}
-                      data-task-id="${task.id}"
-                      data-subtask-index="${subIndex}"
-                      class="subtask-check w-3 h-3 text-gray-600 rounded"
-                    />
-                    <span class="${subtask.completed ? 'line-through text-gray-400' : 'text-gray-600'}">
-                      ${subtask.title}
-                    </span>
-                  </div>
-                  <button
-                    class="delete-subtask text-gray-400 hover:text-red-500 transition-colors p-1"
-                    data-task-id="${task.id}"
-                    data-subtask-index="${subIndex}"
-                    title="Remove subtask"
-                  >
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                  </button>
-                </div>
-              `).join('')}
-            </div>
-          ` : ''}
+${task.subtasks && task.subtasks.length > 0 ? `
+  <div class="subtasks ml-4 mt-2 space-y-1 transition-subtasks ${task.expanded ? 'expanded' : 'collapsed'}">
+
+    ${task.subtasks.map((subtask, subIndex) => `
+      <div class="flex items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-2">
+          <input
+            type="checkbox"
+            ${subtask.completed ? 'checked' : ''}
+            data-task-id="${task.id}"
+            data-subtask-index="${subIndex}"
+            class="subtask-check w-3 h-3 text-gray-600 rounded"
+          />
+          <span class="${subtask.completed ? 'line-through text-gray-400' : 'text-gray-600'}">
+            ${subtask.title}
+          </span>
+        </div>
+        <button
+          class="delete-subtask text-gray-400 hover:text-red-500 transition p-1"
+          data-task-id="${task.id}"
+          data-subtask-index="${subIndex}"
+        >
+          ✕
+        </button>
+      </div>
+    `).join('')}
+  </div>
+` : ''}
 
           <!-- Add Subtask -->
           <div class="add-subtask mt-2 ml-4 flex gap-2">

@@ -216,7 +216,7 @@ setupEventListeners() {
    * ============================= */
   handleAddStudyCard() {
     const title = document.getElementById('study-card-title').value.trim();
-    if (!title) return alert('Please enter a study topic');
+    // if (!title) return alert('Please enter a study topic');
 
     this.studyCards.push(this.createEmptyCard(title));
     this.saveStudyCards();
